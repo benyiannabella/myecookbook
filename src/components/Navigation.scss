@@ -1,0 +1,68 @@
+.navigation {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	background-color: #d83a2a;
+	color: #ffffff;
+	font-family: 'Playwrite DE Grund', cursive;
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+	align-items: center;
+
+	& > .navigation-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 70%;
+
+		& > .navigation-content-left {
+			display: flex;
+			padding-left: 20px;
+			align-items: center;
+
+			& > .title {
+				font-family: 'Rock Salt', cursive;
+				letter-spacing: 0.1rem;
+				text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+				margin: 0;
+			}
+		}
+
+		& > .navigation-content-right {
+			display: flex;
+			& > .language-container {
+				display: flex;
+				gap: 10px;
+				justify-content: flex-end;
+				align-items: center;
+				padding-right: 20px;
+
+				& > .label {
+					padding: 16px;
+					font-size: 16px;
+					font-family: 'Playwrite DE Grund', cursive;
+				}
+
+				& > .radio-container {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					font-size: 16px;
+					gap: 10px;
+
+					& > label {
+						margin: 0;
+					}
+
+					& .selected {
+						color: #460202;
+						font-weight: 600;
+					}
+
+					& > input {
+						accent-color: #460202;
+					}
+				}
+			}
+		}
+	}
+}

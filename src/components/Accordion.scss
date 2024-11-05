@@ -1,0 +1,26 @@
+.accordion {
+	display: flex;
+	flex-direction: column;
+	max-height: 400px;
+	width: 300px;
+
+	& > .accordion-header {
+		height: 50px;
+		font-size: 20px;
+		border: 1px solid #d2b48c;
+		border-radius: 8px;
+		padding: 10px;
+	}
+
+	& > .accordion-body-show {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		justify-content: center;
+		align-items: center;
+	}
+
+	& > .accordion-body-hide {
+		display: none;
+	}
+}
