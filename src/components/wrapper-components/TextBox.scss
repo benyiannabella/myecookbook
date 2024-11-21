@@ -1,0 +1,39 @@
+.textbox-container {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 10px;
+	background-color: transparent;
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #d83a2a;
+	color: #333333;
+	width: 400px;
+
+	& > label {
+		margin: 0;
+		font-size: 16px;
+		font-weight: 600;
+	}
+
+	& > input {
+		width: 300px;
+		height: 32px;
+		border-radius: 5px;
+		border: 1px solid #d83a2a;
+	}
+
+	& > input:focus {
+		outline: none;
+	}
+
+	& > input:hover {
+		outline: none;
+		border: 1px solid #333333;
+	}
+}
+
+.textbox-container:hover {
+	background-color: #d83a2a;
+	color: #333333;
+}

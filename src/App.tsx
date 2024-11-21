@@ -1,34 +1,31 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home';
-import Recipes from './pages/Recipes';
+import Categories from './pages/Categories';
 import AboutApp from './pages/AboutApp';
 import Favorites from './pages/Favorites';
 import Error from './pages/Error';
 import { useEffect, useState } from 'react';
-import Translation from './models/Translation';
-import { getRecipeCategories, getTranslations } from './data/db';
 import RecipeCategory from './models/RecipeCategory';
+import Recipes from './pages/Recipes';
+import Welcome from './pages/Welcome';
+import Modal from './components/wrapper-components/Modal';
+import { useGlobalContext } from './GlobalContextProvider';
 
 const App = () => {
-	const [language, setLanguage] = useState('En');
-	const [translations, setTranslations] = useState<Translation[] | undefined>(
-		undefined
-	);
 	const [categories, setCategories] = useState<RecipeCategory[] | undefined>(
 		undefined
 	);
 
-	const handleLanguageChanged = (lang: string) => {
-		setLanguage(lang);
-	};
+	const {
+		isAuthenticated,
+		showModal,
+		modalContent,
+		onModalClosed: handleModalClosed,
+	} = useGlobalContext();
 
 	useEffect(() => {
 		const fetchData = () => {
-			const trs = getTranslations();
-			if (trs) {
-				setTranslations(trs);
-			}
-			const ctgs = getRecipeCategories();
+			const ctgs: RecipeCategory[] = [];
 			if (ctgs) {
 				setCategories(ctgs);
 			}
@@ -39,32 +36,50 @@ const App = () => {
 	const router = createBrowserRouter([
 		{
 			path: '/',
-			element: (
-				<Home
-					language={language}
-					onLanguageChanged={handleLanguageChanged}
-					translations={translations || null}
-				/>
-			),
+			element: <Home />,
 			errorElement: <Error />,
-			children: [
-				{
-					index: true,
-					element: <Favorites />,
-				},
-				{
-					path: '/recipes',
-					element: <Recipes categories={categories || []} />,
-				},
-				{
-					path: '/about-app',
-					element: <AboutApp />,
-				},
-			],
+			children: isAuthenticated
+				? [
+						{
+							index: true,
+							element: <Favorites />,
+						},
+						{
+							path: '/recipes',
+							element: <Categories categories={categories || []} />,
+						},
+						{
+							path: '/about-app',
+							element: <AboutApp />,
+						},
+						{
+							path: '/recipes/category-recipes',
+							element: <Recipes />,
+						},
+				  ]
+				: [
+						{
+							index: true,
+							element: <Welcome />,
+						},
+				  ],
 		},
 	]);
 
-	return <RouterProvider router={router} />;
+	return (
+		<>
+			<RouterProvider router={router} />
+			{showModal && (
+				<Modal
+					title={modalContent?.title}
+					showModal={showModal}
+					onModalClosed={handleModalClosed}
+				>
+					{modalContent?.content}
+				</Modal>
+			)}
+		</>
+	);
 };
 
 export default App;

@@ -1,11 +1,12 @@
 import Recipe from './Recipe';
 
 interface RecipeCategory {
-	id: number;
+	id: string;
+	userId: string;
 	categoryName: string;
-	image: string;
+	image: string | undefined;
 	description: string;
-	recipes: Recipe[];
+	recipes?: Recipe[];
 }
 
 export default RecipeCategory;

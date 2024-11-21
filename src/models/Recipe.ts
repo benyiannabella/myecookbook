@@ -1,12 +1,14 @@
-import Ingredient from './Ingredient';
+import RecipeIngredient from './RecipeIngredient';
 
 interface Recipe {
-	id: number;
+	id: string;
+	userId: string;
+	categoryId: string;
 	recipeName: string;
-	category: string;
 	description: string;
 	image: string;
-	ingredients: Ingredient[];
+	favorite: boolean;
+	ingredients: RecipeIngredient[];
 }
 
 export default Recipe;

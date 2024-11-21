@@ -1,0 +1,36 @@
+.welcome {
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	background-image: url('../assets/images/login.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+
+	& > .welcome-message {
+		font-family: 'Parisienne', cursive;
+		color: #d83a2a;
+		font-size: 40px;
+		font-weight: 700;
+	}
+
+	& > .form-container {
+		& > .textbox-container {
+			color: #333333;
+			font-weight: 600;
+			border: 2px solid #333333;
+
+			& > input {
+				border: 1px solid #333333;
+			}
+		}
+
+		& button {
+			border: 1px solid #333333;
+			color: #333333;
+		}
+	}
+}

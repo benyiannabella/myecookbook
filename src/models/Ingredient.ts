@@ -1,8 +1,8 @@
 interface Ingredient {
-	id: number;
+	id: string;
+	userId: string;
 	ingredientName: string;
-	quantity: number;
-	unitOfMeasure: string;
+	description: string;
 }
 
 export default Ingredient;

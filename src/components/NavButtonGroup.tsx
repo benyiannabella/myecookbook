@@ -10,13 +10,13 @@ const NavButtonGroup: React.FunctionComponent<NavButtonGroupProps> = ({
 	labels,
 }) => {
 	const getPath = (label: string): string => {
-		if (label === 'Home' || label === 'Acasă') {
+		if (label === 'Home') {
 			return '/';
 		}
-		if (label === 'Recipes' || label === 'Rețete') {
+		if (label === 'Recipes') {
 			return '/recipes';
 		}
-		if (label === 'About App' || label === 'Despre Aplicație') {
+		if (label === 'About App') {
 			return '/about-app';
 		}
 		return '/';

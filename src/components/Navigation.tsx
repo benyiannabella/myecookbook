@@ -1,65 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './Navigation.scss';
 import NavButtonGroup from './NavButtonGroup';
-import RadioButton from './RadioButton';
-import Translation from '../models/Translation';
-import { getFieldTranslation } from '../data/helper';
+import TextBox from './wrapper-components/TextBox';
+import FormButton from './wrapper-components/FormButton';
+import { useNavigate } from 'react-router-dom';
+import AuthForm from './AuthForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+	faRightFromBracket,
+	faRightToBracket,
+} from '@fortawesome/free-solid-svg-icons';
+import { useGlobalContext } from '../GlobalContextProvider';
+import { supabase } from '../config/client';
 
-interface NavigationProps {
-	language: string;
-	translations: Translation[];
-	onLanguageChanged: (lang: string) => void;
-}
+// interface NavigationProps {
 
-const Navigation: React.FunctionComponent<NavigationProps> = ({
-	language,
-	translations,
-	onLanguageChanged,
-}) => {
-	const [languageData, setLanguageData] = useState<string[]>();
+// }
 
-	useEffect(() => {
-		const title = getFieldTranslation(translations, 'title', language);
-		const lang = getFieldTranslation(translations, 'language', language);
-		const home = getFieldTranslation(translations, 'home', language);
-		const recipes = getFieldTranslation(translations, 'recipes', language);
-		const aboutApp = getFieldTranslation(translations, 'aboutApp', language);
-		setLanguageData([
-			title || '',
-			lang || '',
-			home || '',
-			recipes || '',
-			aboutApp || '',
-		]);
-	}, [language, translations]);
+const Navigation: React.FunctionComponent = () => {
+	const navigate = useNavigate();
+	const { isAuthenticated, onModalOpened, onSignOut } = useGlobalContext();
 
-	const [title, lang, home, recipes, aboutApp] = languageData ?? [];
+	const handleSignOutClicked = (e: any) => {
+		console.log(e);
+		e.preventDefault();
+		onSignOut();
+		navigate('/');
+	};
+
+	const handleSignInClicked = () => {
+		onModalOpened('Sign In', <AuthForm />);
+	};
 
 	return (
 		<div className="navigation">
 			<div className="navigation-content">
 				<div className="navigation-content-left">
-					<h3 className="title">{title}</h3>
+					<h3 className="title">MyDigitalCookBook</h3>
 				</div>
 				<div className="navigation-content-right">
 					<NavButtonGroup
-						labels={[home || '', recipes || '', aboutApp || '']}
+						labels={isAuthenticated ? ['Home', 'Recipes', 'About App'] : []}
 					/>
-					<div className="language-container">
-						<span className="label">{lang}</span>
-						<RadioButton
-							label="En"
-							value="En"
-							isSelected={language === 'En'}
-							onValueChanged={onLanguageChanged}
-						/>
-						<RadioButton
-							label="Ro"
-							value="Ro"
-							isSelected={language === 'Ro'}
-							onValueChanged={onLanguageChanged}
-						/>
-					</div>
+					{isAuthenticated ? (
+						<>
+							<TextBox
+								label=""
+								placeholder="Search Recipe..."
+								onValueChanged={() => console.log('value changed')}
+							/>
+							<FormButton
+								caption=""
+								onClick={handleSignOutClicked}
+							>
+								<FontAwesomeIcon icon={faRightFromBracket} />
+							</FormButton>
+						</>
+					) : (
+						<FormButton
+							caption=""
+							onClick={handleSignInClicked}
+						>
+							<FontAwesomeIcon icon={faRightToBracket} />
+						</FormButton>
+					)}
 				</div>
 			</div>
 		</div>

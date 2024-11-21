@@ -7,6 +7,7 @@
 	font-family: 'Playwrite DE Grund', cursive;
 	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 	align-items: center;
+	z-index: 1;
 
 	& > .navigation-content {
 		display: flex;
@@ -29,38 +30,31 @@
 
 		& > .navigation-content-right {
 			display: flex;
-			& > .language-container {
-				display: flex;
-				gap: 10px;
-				justify-content: flex-end;
-				align-items: center;
-				padding-right: 20px;
+			align-items: center;
+			gap: 20px;
 
-				& > .label {
-					padding: 16px;
-					font-size: 16px;
-					font-family: 'Playwrite DE Grund', cursive;
+			& .form-button {
+				display: flex;
+				align-items: flex-start;
+				padding: 20px;
+
+				& > button {
+					color: #ffffff;
+					padding: 0;
+					font-size: 32px;
+					font-weight: 600;
+					border-radius: 5px;
+					margin-bottom: 10px;
 				}
 
-				& > .radio-container {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					font-size: 16px;
-					gap: 10px;
+				& > button:hover {
+					color: #333333;
+					border: transparent;
+				}
 
-					& > label {
-						margin: 0;
-					}
-
-					& .selected {
-						color: #460202;
-						font-weight: 600;
-					}
-
-					& > input {
-						accent-color: #460202;
-					}
+				& > button:focus {
+					color: #333333;
+					border: transparent;
 				}
 			}
 		}
