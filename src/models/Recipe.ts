@@ -7,7 +7,7 @@ interface Recipe {
 	recipeName: string;
 	description: string;
 	image: string;
-	favorite: boolean;
+	isFavorite: boolean;
 	ingredients: RecipeIngredient[];
 }
 

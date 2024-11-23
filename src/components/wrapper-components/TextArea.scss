@@ -1,0 +1,11 @@
+.text-area {
+	border-radius: 5px;
+	border: 1px solid #d83a2a;
+}
+
+.no-resize {
+	resize: none;
+}
+.text-area:focus {
+	outline: none;
+}

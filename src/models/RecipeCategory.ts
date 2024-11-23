@@ -4,8 +4,8 @@ interface RecipeCategory {
 	id: string;
 	userId: string;
 	categoryName: string;
-	image: string | undefined;
-	description: string;
+	image?: string;
+	description?: string;
 	recipes?: Recipe[];
 }
 

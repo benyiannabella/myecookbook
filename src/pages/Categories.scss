@@ -5,7 +5,7 @@
 	width: 70%;
 	height: 95%;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-	background-color: #f4e9d8;
+	background-color: #f2f2f2;
 
 	& > .form-buttons {
 		justify-content: space-between;
@@ -30,8 +30,8 @@
 		margin-bottom: 50px;
 
 		& > .category-not-found {
-			color: #3949ab;
-			font-size: 32px;
+			color: #333333;
+			font-size: 48px;
 			width: 100%;
 			text-align: center;
 		}

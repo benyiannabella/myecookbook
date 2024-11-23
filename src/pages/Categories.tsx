@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FormButtons from '../components/wrapper-components/FormButtons';
 import './Categories.scss';
 import FormButton from '../components/wrapper-components/FormButton';
@@ -9,21 +9,38 @@ import { random } from '@ctrl/tinycolor';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+	faFolderOpen,
 	faPenToSquare,
 	faPlus,
 	faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import CategoryForm from '../components/CategoryForm';
 import { useGlobalContext } from '../GlobalContextProvider';
+import { GetCategoriesByUserId } from '../services/RecipeService';
 
-interface RecipesProps {
-	categories: RecipeCategory[];
-}
-
-const Categories: React.FunctionComponent<RecipesProps> = ({ categories }) => {
+const Categories: React.FunctionComponent = () => {
 	const navigate = useNavigate();
+	const { onModalOpened, user } = useGlobalContext();
 
-	const { onModalOpened } = useGlobalContext();
+	const [categories, setCategories] = useState<RecipeCategory[] | undefined>(
+		undefined
+	);
+
+	const getCategories = async () => {
+		if (user) {
+			const response = await GetCategoriesByUserId(user?.id);
+			if (response.data) {
+				setCategories(response.data);
+			} else {
+				console.log(response.error);
+			}
+		}
+	};
+
+	useEffect(() => {
+		getCategories();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user?.id]);
 
 	const handleAddCategory = () => {
 		onModalOpened('Add Recipe Category', <CategoryForm />);
@@ -47,7 +64,7 @@ const Categories: React.FunctionComponent<RecipesProps> = ({ categories }) => {
 				<h3>Recipe Categories</h3>
 			</FormButtons>
 			<div className="category-container">
-				{categories.length > 0 ? (
+				{categories && categories.length > 0 ? (
 					categories.map((category: RecipeCategory) => {
 						return (
 							<Accordion
@@ -88,7 +105,9 @@ const Categories: React.FunctionComponent<RecipesProps> = ({ categories }) => {
 						);
 					})
 				) : (
-					<div className="category-not-found">No Recipe Category Found</div>
+					<div className="category-not-found">
+						<FontAwesomeIcon icon={faFolderOpen} />
+					</div>
 				)}
 			</div>
 		</div>

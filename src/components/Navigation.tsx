@@ -7,15 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+	faBookOpen,
 	faRightFromBracket,
 	faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { useGlobalContext } from '../GlobalContextProvider';
-import { supabase } from '../config/client';
-
-// interface NavigationProps {
-
-// }
 
 const Navigation: React.FunctionComponent = () => {
 	const navigate = useNavigate();
@@ -37,6 +33,7 @@ const Navigation: React.FunctionComponent = () => {
 			<div className="navigation-content">
 				<div className="navigation-content-left">
 					<h3 className="title">MyDigitalCookBook</h3>
+					<FontAwesomeIcon icon={faBookOpen} />
 				</div>
 				<div className="navigation-content-right">
 					<NavButtonGroup

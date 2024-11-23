@@ -1,21 +1,15 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './pages/Home';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Categories from './pages/Categories';
 import AboutApp from './pages/AboutApp';
 import Favorites from './pages/Favorites';
 import Error from './pages/Error';
-import { useEffect, useState } from 'react';
-import RecipeCategory from './models/RecipeCategory';
 import Recipes from './pages/Recipes';
 import Welcome from './pages/Welcome';
 import Modal from './components/wrapper-components/Modal';
 import { useGlobalContext } from './GlobalContextProvider';
+import Home from './pages/Home';
 
 const App = () => {
-	const [categories, setCategories] = useState<RecipeCategory[] | undefined>(
-		undefined
-	);
-
 	const {
 		isAuthenticated,
 		showModal,
@@ -23,52 +17,50 @@ const App = () => {
 		onModalClosed: handleModalClosed,
 	} = useGlobalContext();
 
-	useEffect(() => {
-		const fetchData = () => {
-			const ctgs: RecipeCategory[] = [];
-			if (ctgs) {
-				setCategories(ctgs);
-			}
-		};
-		fetchData();
-	}, []);
-
-	const router = createBrowserRouter([
-		{
-			path: '/',
-			element: <Home />,
-			errorElement: <Error />,
-			children: isAuthenticated
-				? [
-						{
-							index: true,
-							element: <Favorites />,
-						},
-						{
-							path: '/recipes',
-							element: <Categories categories={categories || []} />,
-						},
-						{
-							path: '/about-app',
-							element: <AboutApp />,
-						},
-						{
-							path: '/recipes/category-recipes',
-							element: <Recipes />,
-						},
-				  ]
-				: [
-						{
-							index: true,
-							element: <Welcome />,
-						},
-				  ],
-		},
-	]);
-
 	return (
 		<>
-			<RouterProvider router={router} />
+			<Router>
+				{isAuthenticated ? (
+					<Routes>
+						<Route
+							path="/"
+							element={<Home />}
+							errorElement={<Error />}
+						>
+							<Route
+								index
+								element={<Favorites />}
+							/>
+							<Route
+								path="/categories"
+								element={<Categories />}
+								errorElement={<Error />}
+							/>
+							<Route
+								path="/about-app"
+								element={<AboutApp />}
+								errorElement={<Error />}
+							/>
+							<Route
+								path="/recipes/category-recipes"
+								element={<Recipes />}
+							/>
+						</Route>
+					</Routes>
+				) : (
+					<Routes>
+						<Route
+							path="/"
+							element={<Home />}
+						>
+							<Route
+								index
+								element={<Welcome />}
+							/>
+						</Route>
+					</Routes>
+				)}
+			</Router>
 			{showModal && (
 				<Modal
 					title={modalContent?.title}

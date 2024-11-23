@@ -4,8 +4,8 @@ import './ImageWrapper.scss';
 interface ImageWrapperProps {
 	src: string;
 	alt: string;
-	width?: string;
-	height?: string;
+	width?: string | number;
+	height?: string | number;
 }
 
 const ImageWrapper: React.FunctionComponent<ImageWrapperProps> = ({

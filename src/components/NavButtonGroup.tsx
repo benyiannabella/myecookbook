@@ -14,7 +14,7 @@ const NavButtonGroup: React.FunctionComponent<NavButtonGroupProps> = ({
 			return '/';
 		}
 		if (label === 'Recipes') {
-			return '/recipes';
+			return '/categories';
 		}
 		if (label === 'About App') {
 			return '/about-app';

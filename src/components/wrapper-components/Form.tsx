@@ -3,14 +3,14 @@ import './Form.scss';
 
 interface FormProps {
 	children?: React.ReactNode;
-	onSubmit?: () => void;
+	onSubmit?: (e: any) => void;
 }
 
 const Form: React.FunctionComponent<FormProps> = ({ children, onSubmit }) => {
 	const handleSubmit = (e: any) => {
 		e.preventDefault();
 		if (onSubmit) {
-			onSubmit();
+			onSubmit(e);
 		}
 	};
 
