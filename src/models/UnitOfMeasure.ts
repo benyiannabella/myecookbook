@@ -1,7 +1,7 @@
 interface UnitOfMeasure {
 	id: string;
 	userId: string;
-	unitOfMeasureName: string;
+	unitOfMeasureCode: string;
 	description: string;
 }
 

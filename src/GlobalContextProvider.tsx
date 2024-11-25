@@ -1,13 +1,32 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from 'react';
 import { supabase } from './config/client';
 import { User } from '@supabase/supabase-js';
 import ModalContent from './models/ModalContent';
+import Ingredient from './models/Ingredient';
+import UnitOfMeasure from './models/UnitOfMeasure';
+import {
+	GetAllIngredients,
+	GetAllUnitsOfMeasure,
+	GetCategoriesByUserId,
+} from './services/RecipeService';
+import { toast } from 'react-toastify';
+import RecipeCategory from './models/RecipeCategory';
 
 interface ContextType {
 	user: User | undefined;
 	isAuthenticated: boolean;
 	showModal: boolean;
 	modalContent: ModalContent | undefined;
+	ingredients: Ingredient[];
+	unitsOfMeasure: UnitOfMeasure[];
+	categories: RecipeCategory[];
+	getCategories: () => Promise<void>;
 	onModalOpened: (title: string, content: React.ReactNode) => void;
 	onModalClosed: () => void;
 	onRegister: (email: string, password: string) => void;
@@ -36,12 +55,50 @@ const GlobalContextProvider: React.FunctionComponent<
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [modalContent, setModalContent] = useState<ModalContent | undefined>();
+	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+	const [unitsOfMeasure, setUnitsOfMeasure] = useState<UnitOfMeasure[]>([]);
+	const [categories, setCategories] = useState<RecipeCategory[]>([]);
+
+	const getCategories = useCallback(async () => {
+		if (user) {
+			const response = await GetCategoriesByUserId(user?.id);
+			if (response.data) {
+				setCategories(response.data);
+			} else {
+				toast.error(`Failed to get categories ${response.error}`);
+			}
+		}
+	}, [user]);
+
+	const getIngredients = async () => {
+		await GetAllIngredients().then((response) => {
+			if (response.data) {
+				setIngredients(response.data);
+			} else if (response.error) {
+				toast.error(`Failed to get ingredients. ${response.error}`);
+			}
+		});
+	};
+
+	const getUnitsOfMeasure = async () => {
+		await GetAllUnitsOfMeasure().then((response) => {
+			if (response.data) {
+				setUnitsOfMeasure(response.data);
+			} else if (response.error) {
+				toast.error(`Failed to get units of measure. ${response.error}`);
+			}
+		});
+	};
 
 	useEffect(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, session) => {
 			if (event === 'SIGNED_IN') {
 				setUser(session?.user);
 				setIsAuthenticated(true);
+
+				getIngredients();
+				getUnitsOfMeasure();
+				getCategories();
 			} else if (event === 'SIGNED_OUT') {
 				setUser(undefined);
 				setIsAuthenticated(false);
@@ -50,7 +107,7 @@ const GlobalContextProvider: React.FunctionComponent<
 		return () => {
 			data.subscription.unsubscribe();
 		};
-	}, []);
+	}, [getCategories]);
 
 	const onSignIn = async (email: string, password: string) => {
 		const { data, error } = await supabase.auth.signInWithPassword({
@@ -105,6 +162,10 @@ const GlobalContextProvider: React.FunctionComponent<
 				isAuthenticated,
 				showModal,
 				modalContent,
+				ingredients,
+				unitsOfMeasure,
+				categories,
+				getCategories,
 				onModalClosed,
 				onModalOpened,
 				onSignIn,

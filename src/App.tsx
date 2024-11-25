@@ -8,18 +8,30 @@ import Welcome from './pages/Welcome';
 import Modal from './components/wrapper-components/Modal';
 import { useGlobalContext } from './GlobalContextProvider';
 import Home from './pages/Home';
+import { ToastContainer } from 'react-toastify';
+import Recipe from './pages/Recipe';
 
 const App = () => {
 	const {
 		isAuthenticated,
 		showModal,
 		modalContent,
-		onModalClosed: handleModalClosed,
+		categories,
+		onModalClosed,
 	} = useGlobalContext();
 
 	return (
 		<>
 			<Router>
+				<ToastContainer
+					position="top-right"
+					autoClose={5000}
+					hideProgressBar
+					closeOnClick
+					draggable
+					pauseOnHover
+					theme="color"
+				/>
 				{isAuthenticated ? (
 					<Routes>
 						<Route
@@ -45,6 +57,10 @@ const App = () => {
 								path="/recipes/category-recipes"
 								element={<Recipes />}
 							/>
+							<Route
+								path="/recipes/add-recipe"
+								element={<Recipe categories={categories} />}
+							/>
 						</Route>
 					</Routes>
 				) : (
@@ -65,7 +81,7 @@ const App = () => {
 				<Modal
 					title={modalContent?.title}
 					showModal={showModal}
-					onModalClosed={handleModalClosed}
+					onModalClosed={onModalClosed}
 				>
 					{modalContent?.content}
 				</Modal>

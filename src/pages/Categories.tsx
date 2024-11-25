@@ -16,26 +16,19 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import CategoryForm from '../components/CategoryForm';
 import { useGlobalContext } from '../GlobalContextProvider';
-import { GetCategoriesByUserId } from '../services/RecipeService';
+import {
+	DeleteCategoryById,
+	RemoveImageFromSupabase,
+} from '../services/RecipeService';
+import MessageBox from '../components/wrapper-components/MessageBox';
+import { toast } from 'react-toastify';
+import './ToastStyle.scss';
+import { GetImageNameFromUrl } from '../Helper';
 
 const Categories: React.FunctionComponent = () => {
 	const navigate = useNavigate();
-	const { onModalOpened, user } = useGlobalContext();
-
-	const [categories, setCategories] = useState<RecipeCategory[] | undefined>(
-		undefined
-	);
-
-	const getCategories = async () => {
-		if (user) {
-			const response = await GetCategoriesByUserId(user?.id);
-			if (response.data) {
-				setCategories(response.data);
-			} else {
-				console.log(response.error);
-			}
-		}
-	};
+	const { onModalOpened, onModalClosed, user, getCategories, categories } =
+		useGlobalContext();
 
 	useEffect(() => {
 		getCategories();
@@ -43,15 +36,80 @@ const Categories: React.FunctionComponent = () => {
 	}, [user?.id]);
 
 	const handleAddCategory = () => {
-		onModalOpened('Add Recipe Category', <CategoryForm />);
+		onModalOpened(
+			'Add Recipe Category',
+			<CategoryForm onModalClosed={handleModalClosed} />
+		);
+		getCategories();
 	};
 
-	const handleAddRecipe = () => {};
+	const handleAddRecipe = (categoryId: string) => {
+		navigate('/recipes/add-recipe', { state: { categoryId } });
+	};
 
-	const handleDeleteCategory = () => {};
+	const handleDeleteCancelled = () => {
+		onModalClosed();
+	};
 
-	const handleViewRecipes = () => {
+	const handleModalClosed = () => {
+		onModalClosed();
+		getCategories();
+	};
+
+	const handleDeleteApproved = (category: RecipeCategory) => {
+		DeleteCategoryById(category.id).then((response) => {
+			if (response.statusCode === 204) {
+				toast.success('Category deleted');
+
+				RemoveImageFromSupabase(GetImageNameFromUrl(category.image ?? '')).then(
+					(res) => {
+						if (res.error) {
+							toast.error(`Failed to remove image from storage ${res.error}`);
+						}
+					}
+				);
+
+				handleModalClosed();
+			} else if (response.error) {
+				toast.error(`Failed to delete category. ${response.error}!`);
+			}
+		});
+	};
+
+	const handleDeleteCategory = (e: any, category: RecipeCategory) => {
+		onModalOpened(
+			'Delete Category',
+			<MessageBox
+				message="Are you sure you want to delete the selected category? 
+                This will remove all it's recipes too."
+			>
+				<FormButtons>
+					<FormButton
+						caption="No"
+						onClick={handleDeleteCancelled}
+					/>
+					<FormButton
+						caption="Yes"
+						onClick={() => handleDeleteApproved(category)}
+					/>
+				</FormButtons>
+			</MessageBox>
+		);
+	};
+
+	const handleCategoryClicked = () => {
 		navigate('/recipes/category-recipes');
+	};
+
+	const handleEditCategory = (category: RecipeCategory) => {
+		onModalOpened(
+			'Edit Recipe Category',
+			<CategoryForm
+				recipeCategory={category}
+				onModalClosed={handleModalClosed}
+			/>
+		);
+		getCategories();
 	};
 
 	return (
@@ -72,34 +130,32 @@ const Categories: React.FunctionComponent = () => {
 								title={category.categoryName}
 								bgColor={random({ luminosity: 'light' }).toHexString()}
 								open
+								role="button"
+								// onClick={handleCategoryClicked}
 							>
 								<FormButton
 									caption=""
-									onClick={handleAddRecipe}
+									onClick={() => handleAddRecipe(category.id)}
 								>
 									<FontAwesomeIcon icon={faPlus} />
 								</FormButton>
 								<FormButton
 									caption=""
-									onClick={handleAddRecipe}
+									onClick={() => handleEditCategory(category)}
 								>
 									<FontAwesomeIcon icon={faPenToSquare} />
 								</FormButton>
 								<FormButton
 									caption=""
-									onClick={handleDeleteCategory}
+									onClick={(e: any) => handleDeleteCategory(e, category)}
 								>
 									<FontAwesomeIcon icon={faTrashCan} />
 								</FormButton>
 								<ImageWrapper
 									src={category?.image || ''}
 									alt={category?.categoryName}
-									width="350"
-									height="350"
-								/>
-								<FormButton
-									caption="View Recipes"
-									onClick={handleViewRecipes}
+									width="250"
+									height="250"
 								/>
 							</Accordion>
 						);
