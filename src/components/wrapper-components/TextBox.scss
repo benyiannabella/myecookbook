@@ -4,7 +4,7 @@
 	align-items: center;
 	gap: 10px;
 	background-color: transparent;
-	padding: 10px;
+	padding: 5px;
 	border-radius: 5px;
 	border: 1px solid #d83a2a;
 	color: #333333;
@@ -29,12 +29,12 @@
 
 	& > input:hover {
 		outline: none;
-		border: 1px solid #333333;
+		// border: 1px solid #333333;
 	}
 }
 
 .textbox-container:hover {
-	background-color: #d83a2a;
+	// background-color: #d83a2a;
 	color: #333333;
-	border: 1px solid #333333;
+	// border: 1px solid #333333;
 }

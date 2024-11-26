@@ -5,7 +5,7 @@ interface Recipe {
 	userId: string;
 	categoryId: string;
 	recipeName: string;
-	description: string;
+	instructions: string;
 	image: string;
 	isFavorite: boolean;
 	ingredients: RecipeIngredient[];

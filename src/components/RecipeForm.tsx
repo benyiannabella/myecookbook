@@ -22,6 +22,7 @@ import { toast } from 'react-toastify';
 import './RecipeForm.scss';
 import SelectBox from './wrapper-components/SelectBox';
 import RecipeIngredient from '../models/RecipeIngredient';
+import TinyMceEditor from './TinyMceEditor';
 
 interface RecipeProps {
 	categoryId?: string;
@@ -42,7 +43,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 		userId: user?.id || '',
 		categoryId: categoryId || '',
 		recipeName: '',
-		description: '',
+		instructions: '',
 		image: '',
 		isFavorite: false,
 		ingredients: [],
@@ -162,6 +163,39 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 	return (
 		<Form>
 			<div className="recipe-form">
+				<div className="top-row">
+					<FormButtons>
+						<FormButton
+							caption="New Ingredient"
+							onClick={handleCancel}
+						/>
+						<FormButton
+							caption="New UOM"
+							onClick={handleRecipeSave}
+						/>
+						<FormButton
+							caption="Cancel"
+							onClick={handleCancel}
+						/>
+						<FormButton
+							caption="Save"
+							onClick={handleRecipeSave}
+						/>
+					</FormButtons>
+					<TextBox
+						label="Name"
+						value={recipe.recipeName}
+						onValueChanged={handleNameChanged}
+					/>
+					<SelectBox
+						dataSource={categories}
+						caption="Category"
+						valueField="id"
+						displayField="categoryName"
+						value={recipe.categoryId}
+						onValueChanged={handleCategoryChanged}
+					/>
+				</div>
 				<div className="top-container">
 					{recipe.image === '' ? (
 						<div className="empty-image-container">
@@ -197,30 +231,13 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 						onChange={handleImageSelection}
 						hidden
 					/>
-					<div className="field-container">
-						<div className="top-row">
-							<TextBox
-								label="Name"
-								value={recipe.recipeName}
-								onValueChanged={handleNameChanged}
-							/>
-							<SelectBox
-								dataSource={categories}
-								caption="Category"
-								valueField="id"
-								displayField="categoryName"
-								value={recipe.categoryId}
-								onValueChanged={handleCategoryChanged}
-							/>
-						</div>
-						<TextArea
-							cols={107}
-							rows={13}
-							placeholder="Add description..."
-							resize={false}
-							onValueChanged={handleDescriptionChange}
-							value={recipe.description}
-						/>
+					<div className="ingredient-list">
+						<h5>Ingredients:</h5>
+						<ul>
+							{recipe.ingredients.map((ingredient) => {
+								return <li key={ingredient.id}>{ingredient.quantity}</li>;
+							})}
+						</ul>
 					</div>
 				</div>
 				<div className="ingredient-row">
@@ -250,24 +267,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 						onClick={handleAddIngredient}
 					/>
 				</div>
-				<div className="ingredient-container">
-					<h5>Ingredients:</h5>
-					<ul>
-						{recipe.ingredients.map((ingredient) => {
-							return <li key={ingredient.id}>{ingredient.quantity}</li>;
-						})}
-					</ul>
-				</div>
-				<FormButtons>
-					<FormButton
-						caption="Cancel"
-						onClick={handleCancel}
-					/>
-					<FormButton
-						caption="Save"
-						onClick={handleRecipeSave}
-					/>
-				</FormButtons>
+				<TinyMceEditor />
 			</div>
 		</Form>
 	);

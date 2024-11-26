@@ -1,6 +1,6 @@
 .select-container {
 	position: relative;
-	padding: 10px;
+	padding: 5px;
 	border-radius: 5px;
 	border: 1px solid #d83a2a;
 	width: 400px;
@@ -28,14 +28,15 @@
 
 		& > input:hover {
 			outline: none;
-			border: 1px solid #333333;
+			// border: 1px solid #333333;
 		}
 
 		& > button {
-			background-color: #d83a2a;
+			background-color: transparent;
 			border: 1px solid #333333;
 			border: transparent;
-			border-radius: 5px;
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
 			height: 32px;
 			width: 32px;
 		}
@@ -45,7 +46,7 @@
 		}
 
 		& > button:hover {
-			border: 1px solid #333333;
+			// border: 1px solid #333333;
 		}
 	}
 
@@ -75,7 +76,7 @@
 }
 
 .select-container:hover {
-	background-color: #d83a2a;
+	// background-color: #d83a2a;
 	color: #333333;
-	border: 1px solid #333333;
+	// border: 1px solid #333333;
 }

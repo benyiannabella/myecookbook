@@ -1,5 +1,5 @@
 .form-container {
-	padding: 0;
+	padding: 20px 0 0 0;
 
 	& > .category-form {
 		display: flex;
@@ -12,8 +12,8 @@
 			gap: 10px;
 			align-items: center;
 			justify-content: center;
-			width: 300px;
-			height: 200px;
+			width: 250px;
+			height: 250px;
 			border-radius: 5px;
 			border: 1px solid #d83a2a;
 			background-color: #aaa;

@@ -37,7 +37,7 @@ const Navigation: React.FunctionComponent = () => {
 				</div>
 				<div className="navigation-content-right">
 					<NavButtonGroup
-						labels={isAuthenticated ? ['Home', 'Recipes', 'About App'] : []}
+						labels={isAuthenticated ? ['Home', 'Categories', 'About App'] : []}
 					/>
 					{isAuthenticated ? (
 						<>
