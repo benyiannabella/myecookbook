@@ -6,6 +6,7 @@ import RecipeCategory from '../models/RecipeCategory';
 import RecipeIngredient from '../models/RecipeIngredient';
 import ServiceResponse from '../models/ServiceResponse';
 import UnitOfMeasure from '../models/UnitOfMeasure';
+import UnitOfMeasureForm from '../components/UnitOfMeasureForm';
 
 export const GetCategoriesByUserId = async (
 	userId: string
@@ -168,7 +169,7 @@ export const CreateIngredient = async (
 ): Promise<ServiceResponse> => {
 	const { status, data, error } = await supabase
 		.from('ingredients')
-		.insert(ingredient);
+		.insert({ ingredient });
 	return { statusCode: status, data, error };
 };
 export const UpdateIngredientById = async (ingredient: Ingredient) => {
@@ -211,7 +212,11 @@ export const CreateUnitOfMeasure = async (
 ): Promise<ServiceResponse> => {
 	const { status, data, error } = await supabase
 		.from('units_of_measure')
-		.insert(uom);
+		.insert({
+			userId: uom.userId,
+			unitOfMeasureCode: uom.unitOfMeasureCode,
+			description: uom.description,
+		});
 	return { statusCode: status, data, error };
 };
 

@@ -23,6 +23,8 @@ import './RecipeForm.scss';
 import SelectBox from './wrapper-components/SelectBox';
 import RecipeIngredient from '../models/RecipeIngredient';
 import TinyMceEditor from './TinyMceEditor';
+import IngredientForm from './IngredientForm';
+import UnitOfMeasureForm from './UnitOfMeasureForm';
 
 interface RecipeProps {
 	categoryId?: string;
@@ -33,7 +35,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 	categoryId,
 	categories,
 }) => {
-	const { user, unitsOfMeasure, ingredients, onModalClosed } =
+	const { user, unitsOfMeasure, ingredients, onModalClosed, onModalOpened } =
 		useGlobalContext();
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [selectedImage, setSelectedImage] = useState<string>('');
@@ -160,6 +162,14 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 		setRecipe(recip);
 	};
 
+	const handleAddNewIngredient = () => {
+		onModalOpened('Add Ingredient', <IngredientForm />);
+	};
+
+	const handleAddNewUom = () => {
+		onModalOpened('Add Unit Of Measure', <UnitOfMeasureForm />);
+	};
+
 	return (
 		<Form>
 			<div className="recipe-form">
@@ -167,11 +177,11 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({
 					<FormButtons>
 						<FormButton
 							caption="New Ingredient"
-							onClick={handleCancel}
+							onClick={handleAddNewIngredient}
 						/>
 						<FormButton
 							caption="New UOM"
-							onClick={handleRecipeSave}
+							onClick={handleAddNewUom}
 						/>
 						<FormButton
 							caption="Cancel"
