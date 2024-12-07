@@ -1,4 +1,3 @@
-import { error } from 'console';
 import { supabase } from '../config/client';
 import Ingredient from '../models/Ingredient';
 import Recipe from '../models/Recipe';
@@ -6,7 +5,6 @@ import RecipeCategory from '../models/RecipeCategory';
 import RecipeIngredient from '../models/RecipeIngredient';
 import ServiceResponse from '../models/ServiceResponse';
 import UnitOfMeasure from '../models/UnitOfMeasure';
-import UnitOfMeasureForm from '../components/UnitOfMeasureForm';
 
 export const GetCategoriesByUserId = async (
 	userId: string
@@ -87,54 +85,58 @@ export const GetRecipeById = async (
 export const CreateRecipe = async (
 	recipe: Recipe
 ): Promise<ServiceResponse> => {
-	const {
-		status: recipeStatus,
-		data: recipeData,
-		error: recipeError,
-	} = await supabase.from('recipes').insert(recipe);
-	if (recipeStatus === 201) {
-		const { status, data, error } = await supabase
-			.from('recipe_ingredients')
-			.insert(recipe.ingredients);
+	const { status, data, error } = await supabase
+		.from('recipes')
+		.insert({
+			userId: recipe.userId,
+			categoryId: recipe.categoryId,
+			recipeName: recipe.recipeName,
+			instructions: recipe.instructions,
+			image: recipe.image,
+			isFavorite: recipe.isFavorite,
+		})
+		.select();
+	return { statusCode: status, data, error };
+};
 
+export const CreateRecipeIngredients = async (
+	recipeIngredients: RecipeIngredient[],
+	recipeId: string
+): Promise<ServiceResponse> => {
+	const ingredients = recipeIngredients.map((recipeIngredient) => {
 		return {
-			statusCode: status,
-			data: data,
-			error: error,
+			recipeId,
+			ingredientId: recipeIngredient.ingredientId,
+			unitOfMeasureId: recipeIngredient.unitOfMeasureId,
+			quantity: recipeIngredient.quantity,
 		};
-	} else {
-		return { statusCode: recipeStatus, data: recipeData, error: recipeError };
-	}
+	});
+	const { status, data, error } = await supabase
+		.from('recipe_ingredients')
+		.insert(ingredients);
+
+	return {
+		statusCode: status,
+		data: data,
+		error: error,
+	};
 };
 
 export const UpdateRecipeById = async (
 	recipe: Recipe
 ): Promise<ServiceResponse> => {
-	const {
-		status: recipeStatus,
-		data: recipeData,
-		error: recipeError,
-	} = await supabase.from('recipes').update(recipe).eq('id', recipe.id);
-	if (recipeStatus === 204) {
-		await supabase
-			.from('recipe_ingredients')
-			.delete()
-			.eq('recipeid', recipe.id);
-
-		const {
-			status: statusIng,
-			data: dataIngr,
-			error: errorIngr,
-		} = await supabase.from('recipe_ingredients').insert(recipe.ingredients);
-
-		return {
-			statusCode: statusIng,
-			data: dataIngr,
-			error: errorIngr,
-		};
-	} else {
-		return { statusCode: recipeStatus, data: recipeData, error: recipeError };
+	const { status, data, error } = await supabase
+		.from('recipes')
+		.update(recipe)
+		.eq('id', recipe.id);
+	if (status === 204) {
+		await DeleteRecipeIngredientsByRecipeId(recipe.id).then((res) => {
+			if (res.statusCode === 204) {
+				CreateRecipeIngredients(recipe.ingredients, recipe.id);
+			}
+		});
 	}
+	return { statusCode: status, data, error };
 };
 
 export const DeleteRecipeById = async (
@@ -144,6 +146,16 @@ export const DeleteRecipeById = async (
 		.from('recipes')
 		.delete()
 		.eq('id', recipeId);
+	return { statusCode: status, data, error };
+};
+
+export const DeleteRecipeIngredientsByRecipeId = async (
+	recipeId: string
+): Promise<ServiceResponse> => {
+	const { status, data, error } = await supabase
+		.from('recipe-ingredients')
+		.delete()
+		.eq('recipeId', recipeId);
 	return { statusCode: status, data, error };
 };
 
@@ -167,9 +179,11 @@ export const GetIngredientById = async (
 export const CreateIngredient = async (
 	ingredient: Ingredient
 ): Promise<ServiceResponse> => {
-	const { status, data, error } = await supabase
-		.from('ingredients')
-		.insert({ ingredient });
+	const { status, data, error } = await supabase.from('ingredients').insert({
+		ingredientName: ingredient.ingredientName,
+		userId: ingredient.userId,
+		description: ingredient.description,
+	});
 	return { statusCode: status, data, error };
 };
 export const UpdateIngredientById = async (ingredient: Ingredient) => {

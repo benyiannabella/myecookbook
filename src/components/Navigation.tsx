@@ -4,18 +4,18 @@ import NavButtonGroup from './NavButtonGroup';
 import TextBox from './wrapper-components/TextBox';
 import FormButton from './wrapper-components/FormButton';
 import { useNavigate } from 'react-router-dom';
-import AuthForm from './AuthForm';
+import AuthForm from './forms/AuthForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faBookOpen,
 	faRightFromBracket,
 	faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons';
-import { useGlobalContext } from '../GlobalContextProvider';
+import { useGlobalContext } from '../context/GlobalContextProvider';
 
 const Navigation: React.FunctionComponent = () => {
 	const navigate = useNavigate();
-	const { isAuthenticated, onModalOpened, onSignOut } = useGlobalContext();
+	const { state, onModalOpened, onSignOut } = useGlobalContext();
 
 	const handleSignOutClicked = (e: any) => {
 		console.log(e);
@@ -37,9 +37,11 @@ const Navigation: React.FunctionComponent = () => {
 				</div>
 				<div className="navigation-content-right">
 					<NavButtonGroup
-						labels={isAuthenticated ? ['Home', 'Categories', 'About App'] : []}
+						labels={
+							state.isAuthenticated ? ['Home', 'Categories', 'About App'] : []
+						}
 					/>
-					{isAuthenticated ? (
+					{state.isAuthenticated ? (
 						<>
 							<TextBox
 								label=""

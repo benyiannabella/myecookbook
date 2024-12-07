@@ -1,3 +1,5 @@
+@import './../variables.scss';
+
 .welcome {
 	position: fixed;
 	display: flex;
@@ -12,25 +14,25 @@
 
 	& > .welcome-message {
 		font-family: 'Parisienne', cursive;
-		color: #d83a2a;
+		color: $primary-color;
 		font-size: 40px;
 		font-weight: 700;
 	}
 
 	& > .form-container {
 		& > .textbox-container {
-			color: #333333;
+			color: $secondary-color;
 			font-weight: 600;
-			border: 2px solid #333333;
+			border: 2px solid $secondary-color;
 
 			& > input {
-				border: 1px solid #333333;
+				border: 1px solid $secondary-color;
 			}
 		}
 
 		& button {
-			border: 1px solid #333333;
-			color: #333333;
+			border: 1px solid $secondary-color;
+			color: $secondary-color;
 		}
 	}
 }

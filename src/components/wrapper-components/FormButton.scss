@@ -1,18 +1,42 @@
+@import './../../variables.scss';
+
 .form-button {
 	& > button {
 		height: 40px;
 		border-radius: 5px;
 		background-color: transparent;
-		color: #d83a2a;
+		color: $primary-color;
 		padding: 5px;
-		border: 1px solid #d83a2a;
+		border: 1px solid $primary-color;
 		font-size: 16px;
 		font-weight: 600;
 	}
 
-	& > button:hover {
-		background-color: #d83a2a;
-		color: #333333;
-		border: 1px solid #333333;
+	& > .new-button {
+		background-color: $new-color;
+		color: #000;
+		border: 1px solid $white-color;
+	}
+
+	& > .save-button {
+		background-color: $success-color;
+		color: $white-color;
+		border: 1px solid $white-color;
+	}
+
+	& > .secondary-button {
+		background-color: $secondary-color;
+		color: $white-color;
+		border: 1px solid $white-color;
+	}
+
+	& > .primary-button {
+		background-color: $primary-color;
+		color: $white-color;
+		border: 1px solid $white-color;
+	}
+
+	& > button:focus {
+		outline: none;
 	}
 }

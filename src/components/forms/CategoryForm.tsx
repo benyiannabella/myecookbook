@@ -1,13 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Form from './wrapper-components/Form';
-import ImageWrapper from './wrapper-components/ImageWrapper';
-import TextBox from './wrapper-components/TextBox';
-import RecipeCategory from '../models/RecipeCategory';
-import TextArea from './wrapper-components/TextArea';
+import React, { useEffect, useState } from 'react';
+import Form from '../wrapper-components/Form';
+import TextBox from '../wrapper-components/TextBox';
+import RecipeCategory from '../../models/RecipeCategory';
+import TextArea from '../wrapper-components/TextArea';
 import './CategoryForm.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage } from '@fortawesome/free-solid-svg-icons';
-import FormButton from './wrapper-components/FormButton';
+import FormButton from '../wrapper-components/FormButton';
 import {
 	CheckImageExists,
 	CreateCategory,
@@ -15,37 +12,31 @@ import {
 	RemoveImageFromSupabase,
 	UpdateCategoryById,
 	UploadImageToSupabase,
-} from '../services/RecipeService';
-import FormButtons from './wrapper-components/FormButtons';
-import { useGlobalContext } from '../GlobalContextProvider';
+} from '../../services/RecipeService';
+import FormButtons from '../wrapper-components/FormButtons';
+import { useGlobalContext } from '../../context/GlobalContextProvider';
 import { toast } from 'react-toastify';
+import { RecipeActionType } from '../../reducer/RecipeReducer';
+import ImageContainer from '../ImageContainer';
 
 interface CategoryFormProps {
 	recipeCategory?: RecipeCategory;
-	onModalClosed: () => void;
 }
 
 const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 	recipeCategory,
-	onModalClosed,
 }) => {
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const { user } = useGlobalContext();
-
+	const { state, dispatch, onModalClosed, getCategories } = useGlobalContext();
 	const [selectedImage, setSelectedImage] = useState<string>('');
 
-	const [category, setCategory] = useState<RecipeCategory>({
-		id: '',
-		userId: user?.id || '',
-		categoryName: '',
-		image: '',
-		description: '',
-		recipes: [],
-	});
+	const { currentCategory } = state;
 
 	useEffect(() => {
 		if (recipeCategory) {
-			setCategory(recipeCategory);
+			dispatch({
+				type: RecipeActionType.SetCurrentCategory,
+				value: recipeCategory,
+			});
 		}
 	}, [recipeCategory]);
 
@@ -54,8 +45,11 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 			if (selectedImage !== '') {
 				await GetImageUrl(selectedImage).then((response) => {
 					if (response.data) {
-						const categ = { ...category, image: response.data };
-						setCategory(categ);
+						const categ = { ...currentCategory, image: response.data };
+						dispatch({
+							type: RecipeActionType.SetCurrentCategory,
+							value: categ,
+						});
 					}
 					if (response.error) {
 						toast.error(
@@ -69,11 +63,7 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 		getImageFromSupabase();
 	}, [selectedImage]);
 
-	const openFileChooser = () => {
-		fileInputRef?.current?.click();
-	};
-
-	const handleImageSelection = async (e: any) => {
+	const onImageSelection = async (e: any) => {
 		const file = e.target.files[0];
 
 		if (selectedImage) {
@@ -94,35 +84,44 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 
 	const handleNameChanged = (e: any) => {
 		if (e) {
-			const categ = { ...category, categoryName: e.target.value };
-			setCategory(categ);
+			const categ = { ...currentCategory, categoryName: e.target.value };
+			dispatch({
+				type: RecipeActionType.SetCurrentCategory,
+				value: categ,
+			});
 		}
 	};
 
 	const handleDescriptionChange = (e: any) => {
 		if (e) {
-			const categ = { ...category, description: e.target.value };
-			setCategory(categ);
+			const categ = { ...currentCategory, description: e.target.value };
+			dispatch({
+				type: RecipeActionType.SetCurrentCategory,
+				value: categ,
+			});
 		}
 	};
 
 	const handleCancel = () => {
 		onModalClosed();
 	};
-	const handleCategorySave = () => {
-		if (category.id === '') {
-			CreateCategory(category).then((response) => {
+
+	const saveCategory = async () => {
+		if (currentCategory.id === '') {
+			await CreateCategory(currentCategory).then((response) => {
 				if (response.statusCode === 201) {
 					toast.success('Category successfully created!');
 					onModalClosed();
+					getCategories();
 				} else if (response.error) {
 					toast.error(`Failed to create category! ${response.error}`);
 				}
 			});
 		} else {
-			UpdateCategoryById(category).then((response) => {
+			await UpdateCategoryById(currentCategory).then((response) => {
 				if (response.statusCode === 204) {
 					onModalClosed();
+					getCategories();
 					toast.success('Category successfully updated!');
 				} else if (response.error) {
 					toast.error(`Failed to update category! ${response.error}`);
@@ -131,40 +130,21 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 		}
 	};
 
+	const handleCategorySave = () => {
+		saveCategory();
+	};
+
 	return (
 		<Form>
 			<div className="category-form">
-				{category.image === '' ? (
-					<div className="empty-image-container">
-						Click To Upload Image
-						<FormButton
-							caption={''}
-							onClick={openFileChooser}
-						>
-							<FontAwesomeIcon icon={faImage} />
-						</FormButton>
-					</div>
-				) : (
-					<div className="image-container">
-						<ImageWrapper
-							src={category.image || ''}
-							alt="Image Preview"
-							width={250}
-							height={250}
-						/>
-						<div
-							role="button"
-							onClick={openFileChooser}
-							className="upload-preview"
-						>
-							<FontAwesomeIcon icon={faImage} />
-						</div>
-					</div>
-				)}
+				<ImageContainer
+					image={currentCategory.image || ''}
+					onImageSelection={onImageSelection}
+				/>
 				<div className="field-container">
 					<TextBox
 						label="Name"
-						value={category.categoryName}
+						value={currentCategory.categoryName}
 						onValueChanged={handleNameChanged}
 					/>
 					<TextArea
@@ -173,23 +153,18 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 						placeholder="Add description..."
 						resize={false}
 						onValueChanged={handleDescriptionChange}
-						value={category.description}
+						value={currentCategory.description}
 					/>
 				</div>
-				<input
-					type="file"
-					accept="image/*"
-					ref={fileInputRef}
-					onChange={handleImageSelection}
-					hidden
-				/>
 			</div>
 			<FormButtons>
 				<FormButton
+					className="secondary-button"
 					caption="Cancel"
 					onClick={handleCancel}
 				/>
 				<FormButton
+					className="new-button"
 					caption="Save"
 					onClick={handleCategorySave}
 				/>

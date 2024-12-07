@@ -1,0 +1,112 @@
+import React, { useEffect, useState } from 'react';
+import Form from '../wrapper-components/Form';
+import TextBox from '../wrapper-components/TextBox';
+import { useGlobalContext } from '../../context/GlobalContextProvider';
+import FormButtons from '../wrapper-components/FormButtons';
+import FormButton from '../wrapper-components/FormButton';
+import UnitOfMeasure from '../../models/UnitOfMeasure';
+import {
+	CreateUnitOfMeasure,
+	UpdateUnitOfMeasureById,
+} from '../../services/RecipeService';
+import { toast } from 'react-toastify';
+
+interface UnitOfMeasureFormProps {
+	currentUom?: UnitOfMeasure;
+}
+
+const UnitOfMeasureForm: React.FunctionComponent<UnitOfMeasureFormProps> = ({
+	currentUom,
+}) => {
+	const { state, onModalClosed, getUnitsOfMeasure } = useGlobalContext();
+	const [uom, setUom] = useState<UnitOfMeasure>({
+		id: '',
+		userId: state.user?.id || '',
+		unitOfMeasureCode: '',
+		description: '',
+	});
+
+	useEffect(() => {
+		if (currentUom) {
+			setUom(currentUom);
+		}
+	}, [currentUom]);
+
+	const handleCancel = () => {
+		onModalClosed();
+	};
+
+	const handleNameChanged = (e: any) => {
+		if (e) {
+			const unit = { ...uom, unitOfMeasureCode: e.target.value };
+			setUom(unit);
+		}
+	};
+
+	const handleDescriptionChanged = (e: any) => {
+		if (e) {
+			const unit = { ...uom, description: e.target.value };
+			setUom(unit);
+		}
+	};
+
+	const saveUom = async () => {
+		if (uom.id === '') {
+			await CreateUnitOfMeasure(uom).then((response) => {
+				if (response.statusCode === 201) {
+					toast.success(
+						`Unit of Measure ${uom.unitOfMeasureCode} successfully created!`
+					);
+					getUnitsOfMeasure();
+				} else if (response.error) {
+					toast.error(`Failed to create unit of measure. ${response.error}.`);
+				}
+			});
+		} else {
+			await UpdateUnitOfMeasureById(uom).then((response) => {
+				if (response.statusCode === 204) {
+					toast.success(
+						`Unit of Measure ${uom.unitOfMeasureCode} successfully updated!`
+					);
+					getUnitsOfMeasure();
+				} else if (response.error) {
+					toast.error(`Failed to update Unit of Measure. ${response.error}.`);
+				}
+			});
+		}
+	};
+
+	const handleUomSave = (e: any) => {
+		saveUom();
+		onModalClosed();
+	};
+
+	return (
+		<Form>
+			<TextBox
+				label="Name"
+				onValueChanged={handleNameChanged}
+				value={uom.unitOfMeasureCode}
+			/>
+			<TextBox
+				label="Description"
+				onValueChanged={handleDescriptionChanged}
+				value={uom.description}
+			/>
+			<FormButtons>
+				<FormButton
+					className="secondary-button"
+					caption="Cancel"
+					onClick={handleCancel}
+				/>
+				<FormButton
+					className="new-button"
+					caption="Save"
+					onClick={handleUomSave}
+				/>
+			</FormButtons>
+		</Form>
+	);
+};
+
+export default UnitOfMeasureForm;

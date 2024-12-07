@@ -1,3 +1,5 @@
+@import './../../variables.scss';
+
 .overlay {
 	position: fixed;
 	top: 0;
@@ -35,8 +37,8 @@
 			height: 50px;
 			font-size: 24px;
 			font-weight: 600;
-			color: #d83a2a;
-			border-bottom: 1px solid #d83a2a;
+			color: $primary-color;
+			border-bottom: 1px solid $primary-color;
 
 			& > .form-button {
 				& > button {
@@ -47,7 +49,7 @@
 
 				& > button:hover {
 					background-color: transparent;
-					color: #333333;
+					color: $secondary-color;
 				}
 			}
 		}

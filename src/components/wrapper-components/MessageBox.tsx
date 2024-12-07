@@ -1,18 +1,41 @@
 import React from 'react';
 import './MessageBox.scss';
+import FormButtons from './FormButtons';
+import FormButton from './FormButton';
 
 interface MessageBoxProps {
 	message: string;
-	children?: React.ReactNode;
+	onNoClicked: () => void;
+	onYesClicked: () => void;
 }
 const MessageBox: React.FunctionComponent<MessageBoxProps> = ({
 	message,
-	children,
+	onNoClicked,
+	onYesClicked,
 }) => {
+	const handleNoCancelled = () => {
+		onNoClicked();
+	};
+
+	const handleYesClicked = () => {
+		onYesClicked();
+	};
+
 	return (
 		<div className="messagebox-container">
 			<p>{message}</p>
-			{children}
+			<FormButtons>
+				<FormButton
+					className="secondary-button"
+					caption="No"
+					onClick={handleNoCancelled}
+				/>
+				<FormButton
+					className="new-button"
+					caption="Yes"
+					onClick={handleYesClicked}
+				/>
+			</FormButtons>
 		</div>
 	);
 };

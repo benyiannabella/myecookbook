@@ -1,3 +1,5 @@
+@import './../../variables.scss';
+
 .textbox-container {
 	display: flex;
 	justify-content: flex-end;
@@ -6,7 +8,7 @@
 	background-color: transparent;
 	padding: 5px;
 	border-radius: 5px;
-	border: 1px solid #d83a2a;
+	border: 1px solid $primary-color;
 	color: #333333;
 	width: 400px;
 
@@ -20,7 +22,7 @@
 		width: 300px;
 		height: 32px;
 		border-radius: 5px;
-		border: 1px solid #d83a2a;
+		border: 1px solid $primary-color;
 	}
 
 	& > input:focus {
@@ -29,12 +31,9 @@
 
 	& > input:hover {
 		outline: none;
-		// border: 1px solid #333333;
 	}
 }
 
 .textbox-container:hover {
-	// background-color: #d83a2a;
-	color: #333333;
-	// border: 1px solid #333333;
+	color: $secondary-color;
 }

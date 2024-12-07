@@ -3,7 +3,7 @@ import './TextBox.scss';
 
 interface TextBoxProps {
 	label: string;
-	value?: string;
+	value?: string | number;
 	type?: React.HTMLInputTypeAttribute;
 	minValue?: number;
 	maxValue?: number;

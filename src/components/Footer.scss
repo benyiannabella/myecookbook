@@ -1,3 +1,5 @@
+@import './../variables.scss';
+
 .footer {
 	display: flex;
 	justify-content: center;
@@ -7,5 +9,5 @@
 	height: 40px;
 	width: 100%;
 	background-color: #2a2a2a;
-	color: #fff;
+	color: $white-color;
 }

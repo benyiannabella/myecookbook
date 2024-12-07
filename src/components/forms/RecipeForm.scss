@@ -1,0 +1,126 @@
+@import '../../variables.scss';
+
+.recipe-form {
+	padding: 0;
+	overflow-y: auto;
+	background-color: $background-color;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 20px;
+	width: 70%;
+	padding: $padding-base;
+
+	& > h4 {
+		color: $primary-color;
+		font-family: $font-family-base;
+		margin: 0;
+	}
+
+	& .select-container,
+	.textbox-container {
+		width: 300px;
+
+		& > input {
+			min-width: 100px;
+		}
+	}
+
+	& > .top-row {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+
+		& > .form-buttons {
+			flex-direction: row-reverse;
+			padding: 0;
+			width: 100%;
+			justify-content: flex-end;
+		}
+	}
+
+	& > .top-container {
+		display: flex;
+		gap: 20px;
+
+		& > .left-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+
+			& > .ingredient-row {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-between;
+				gap: 20px;
+
+				& > .form-button button {
+					width: 300px;
+				}
+			}
+		}
+
+		& > .ingredient-list {
+			display: flex;
+			flex-direction: column;
+			flex: 1 1 auto;
+			min-height: 300px;
+			width: 250px;
+			min-width: 200px;
+			max-width: 300px;
+			background-color: $white-color;
+			padding: 10px;
+			border: 1px solid $primary-color;
+			border-radius: 5px;
+
+			& li {
+				display: flex;
+				list-style-type: circle;
+				align-items: center;
+				justify-content: space-between;
+
+				& > .form-button button {
+					min-width: 20px;
+					height: 20px;
+					border: transparent;
+					color: $secondary-color;
+				}
+
+				& > .form-button button:hover {
+					background-color: transparent;
+					color: $primary-color;
+				}
+
+				& > .form-button button:focus {
+					outline: none;
+				}
+			}
+		}
+
+		& > .editor-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+	}
+}
+
+.recipe-form::-webkit-scrollbar {
+	width: 12px;
+}
+
+.recipe-form::-webkit-scrollbar-thumb {
+	background-color: $primary-color;
+	border-radius: 10px;
+	border: 3px solid #f4e9d8;
+}
+
+.recipe-form::-webkit-scrollbar-thumb:hover {
+	background-color: $primary-color;
+}
+
+.recipe-form::-webkit-scrollbar-track {
+	background: #e0e0e0;
+}

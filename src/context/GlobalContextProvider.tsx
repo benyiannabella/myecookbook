@@ -3,35 +3,36 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
-	useState,
+	useReducer,
 } from 'react';
-import { supabase } from './config/client';
-import { User } from '@supabase/supabase-js';
-import ModalContent from './models/ModalContent';
-import Ingredient from './models/Ingredient';
-import UnitOfMeasure from './models/UnitOfMeasure';
+
+import { toast } from 'react-toastify';
+import RecipeReducer, {
+	RecipeAction,
+	RecipeActionType,
+	RecipeState,
+} from '../reducer/RecipeReducer';
+import RecipeCategory from '../models/RecipeCategory';
+import Ingredient from '../models/Ingredient';
+import UnitOfMeasure from '../models/UnitOfMeasure';
+import { supabase } from '../config/client';
 import {
 	GetAllIngredients,
 	GetAllUnitsOfMeasure,
 	GetCategoriesByUserId,
-} from './services/RecipeService';
-import { toast } from 'react-toastify';
-import RecipeCategory from './models/RecipeCategory';
+} from '../services/RecipeService';
 
 interface ContextType {
-	user: User | undefined;
-	isAuthenticated: boolean;
-	showModal: boolean;
-	modalContent: ModalContent | undefined;
-	ingredients: Ingredient[];
-	unitsOfMeasure: UnitOfMeasure[];
-	categories: RecipeCategory[];
-	getCategories: () => Promise<void>;
+	state: RecipeState;
+	dispatch: React.Dispatch<RecipeAction>;
 	onModalOpened: (title: string, content: React.ReactNode) => void;
 	onModalClosed: () => void;
 	onRegister: (email: string, password: string) => void;
 	onSignIn: (email: string, password: string) => void;
 	onSignOut: () => void;
+	getCategories: () => Promise<void>;
+	getIngredients: () => Promise<void>;
+	getUnitsOfMeasure: () => Promise<void>;
 }
 
 const GlobalContext = createContext<ContextType | undefined>(undefined);
@@ -48,32 +49,73 @@ interface GlobalContextProviderProps {
 	children: React.ReactNode;
 }
 
+const initialRecipeState: RecipeState = {
+	user: undefined,
+	isAuthenticated: false,
+	showModal: false,
+	modalContent: undefined,
+	categories: [] as RecipeCategory[],
+	currentCategory: {
+		id: '',
+		userId: '',
+		categoryName: '',
+		image: '',
+		description: '',
+		recipes: [],
+	},
+	ingredients: [] as Ingredient[],
+	unitsOfMeasure: [] as UnitOfMeasure[],
+};
+
 const GlobalContextProvider: React.FunctionComponent<
 	GlobalContextProviderProps
 > = ({ children }) => {
-	const [user, setUser] = useState<User | undefined>();
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [showModal, setShowModal] = useState(false);
-	const [modalContent, setModalContent] = useState<ModalContent | undefined>();
-	const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-	const [unitsOfMeasure, setUnitsOfMeasure] = useState<UnitOfMeasure[]>([]);
-	const [categories, setCategories] = useState<RecipeCategory[]>([]);
+	const [state, dispatch] = useReducer(RecipeReducer, initialRecipeState);
+
+	useEffect(() => {
+		const { data } = supabase.auth.onAuthStateChange((event, session) => {
+			if (event === 'SIGNED_IN') {
+				dispatch({
+					type: RecipeActionType.SetAuth,
+					value: { user: session?.user, auth: true },
+				});
+
+				getCategories();
+				getIngredients();
+				getUnitsOfMeasure();
+			} else if (event === 'SIGNED_OUT') {
+				dispatch({
+					type: RecipeActionType.SetAuth,
+					value: { user: undefined, auth: false },
+				});
+			}
+		});
+		return () => {
+			data.subscription.unsubscribe();
+		};
+	}, []);
 
 	const getCategories = useCallback(async () => {
-		if (user) {
-			const response = await GetCategoriesByUserId(user?.id);
+		if (state.user) {
+			const response = await GetCategoriesByUserId(state.user?.id);
 			if (response.data) {
-				setCategories(response.data);
+				dispatch({
+					type: RecipeActionType.SetCategories,
+					value: response.data,
+				});
 			} else {
 				toast.error(`Failed to get categories ${response.error}`);
 			}
 		}
-	}, [user]);
+	}, [state.user]);
 
 	const getIngredients = async () => {
 		await GetAllIngredients().then((response) => {
 			if (response.data) {
-				setIngredients(response.data);
+				dispatch({
+					type: RecipeActionType.SetIngredients,
+					value: response.data,
+				});
 			} else if (response.error) {
 				toast.error(`Failed to get ingredients. ${response.error}`);
 			}
@@ -83,31 +125,15 @@ const GlobalContextProvider: React.FunctionComponent<
 	const getUnitsOfMeasure = async () => {
 		await GetAllUnitsOfMeasure().then((response) => {
 			if (response.data) {
-				setUnitsOfMeasure(response.data);
+				dispatch({
+					type: RecipeActionType.SetUnitsOfMeasure,
+					value: response.data,
+				});
 			} else if (response.error) {
 				toast.error(`Failed to get units of measure. ${response.error}`);
 			}
 		});
 	};
-
-	useEffect(() => {
-		const { data } = supabase.auth.onAuthStateChange((event, session) => {
-			if (event === 'SIGNED_IN') {
-				setUser(session?.user);
-				setIsAuthenticated(true);
-
-				getIngredients();
-				getUnitsOfMeasure();
-				getCategories();
-			} else if (event === 'SIGNED_OUT') {
-				setUser(undefined);
-				setIsAuthenticated(false);
-			}
-		});
-		return () => {
-			data.subscription.unsubscribe();
-		};
-	}, [getCategories]);
 
 	const onSignIn = async (email: string, password: string) => {
 		const { data, error } = await supabase.auth.signInWithPassword({
@@ -146,31 +172,32 @@ const GlobalContextProvider: React.FunctionComponent<
 	};
 
 	const onModalOpened = (title: string, content: React.ReactNode) => {
-		setModalContent({ title, content });
-		setShowModal(true);
+		dispatch({
+			type: RecipeActionType.SetModal,
+			value: { show: true, content: { title, content } },
+		});
 	};
 
 	const onModalClosed = () => {
-		setShowModal(false);
-		setModalContent(undefined);
+		dispatch({
+			type: RecipeActionType.SetModal,
+			value: { show: false, content: undefined },
+		});
 	};
 
 	return (
 		<GlobalContext.Provider
 			value={{
-				user,
-				isAuthenticated,
-				showModal,
-				modalContent,
-				ingredients,
-				unitsOfMeasure,
-				categories,
-				getCategories,
+				state,
+				dispatch,
 				onModalClosed,
 				onModalOpened,
 				onSignIn,
 				onRegister,
 				onSignOut,
+				getCategories,
+				getIngredients,
+				getUnitsOfMeasure,
 			}}
 		>
 			{children}

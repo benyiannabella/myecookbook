@@ -6,6 +6,7 @@ interface FormButtonsProp {
 	children?: React.ReactNode;
 	type?: 'submit' | 'reset' | 'button' | undefined;
 	disabled?: boolean;
+	className?: string;
 	onClick?: (e: any) => void | undefined;
 }
 
@@ -14,6 +15,7 @@ const FormButton: React.FunctionComponent<FormButtonsProp> = ({
 	caption,
 	type,
 	disabled,
+	className,
 	onClick,
 }) => {
 	const handleClick = (e: any) => {
@@ -25,6 +27,7 @@ const FormButton: React.FunctionComponent<FormButtonsProp> = ({
 	return (
 		<div className="form-button">
 			<button
+				className={className}
 				onClick={handleClick}
 				type={type}
 				disabled={disabled}

@@ -1,9 +1,11 @@
+@import './../variables.scss';
+
 .Toastify__toast--success {
-	background-color: #4caf50;
-	color: #fff;
+	background-color: $success-color;
+	color: $white-color;
 }
 
 .Toastify__toast--error {
-	background-color: #f44336;
-	color: #fff;
+	background-color: $primary-color;
+	color: $white-color;
 }

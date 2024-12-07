@@ -1,5 +1,6 @@
 .messagebox-container {
-	& > p {
+	width: 400px;
+	s & > p {
 		font-size: 20px;
 		font-weight: 500;
 		padding: 10px;
@@ -8,10 +9,14 @@
 	& > .form-buttons {
 		width: 100%;
 		justify-content: flex-end;
-		padding: 10px;
+		align-items: center;
+		padding: 5px 0 0 0;
+		gap: 5px;
 
 		& > .form-button button {
 			width: 100px;
+			height: 30px;
+			font-size: 12px;
 		}
 	}
 }

@@ -1,3 +1,5 @@
+@import './../variables.scss';
+
 .button-group {
 	display: flex;
 	align-items: flex-start;
@@ -5,18 +7,18 @@
 
 	& > button {
 		font-size: 18px;
-		font-family: 'Playwrite DE Grund', cursive;
+		font-family: $font-family-base;
 		background-color: transparent;
 		border: none;
 		padding: 0 10px;
 
 		& > a {
 			text-decoration: none;
-			color: #ffffff;
+			color: $white-color;
 		}
 
 		& > a:hover {
-			color: #460202;
+			color: $secondary-color;
 		}
 	}
 

@@ -15,7 +15,7 @@ const ImageWrapper: React.FunctionComponent<ImageWrapperProps> = ({
 	height,
 }) => {
 	return (
-		<div className="image-container">
+		<div className="image-wrapper">
 			<img
 				src={src}
 				alt={alt}

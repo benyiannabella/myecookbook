@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import TextBox from './wrapper-components/TextBox';
-import FormButton from './wrapper-components/FormButton';
-import UserCredentials from '../models/UserCredentials';
-import Form from './wrapper-components/Form';
-import FormButtons from './wrapper-components/FormButtons';
-import { useGlobalContext } from '../GlobalContextProvider';
+import TextBox from '../wrapper-components/TextBox';
+import FormButton from '../wrapper-components/FormButton';
+import UserCredentials from '../../models/UserCredentials';
+import Form from '../wrapper-components/Form';
+import FormButtons from '../wrapper-components/FormButtons';
+import { useGlobalContext } from '../../context/GlobalContextProvider';
 
 // interface AuthFormProps {
 // }

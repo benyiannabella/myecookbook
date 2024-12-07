@@ -1,6 +1,8 @@
+@import './../../variables.scss';
+
 .text-area {
 	border-radius: 5px;
-	border: 1px solid #d83a2a;
+	border: 1px solid $primary-color;
 }
 
 .no-resize {

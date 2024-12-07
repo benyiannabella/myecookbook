@@ -1,8 +1,10 @@
+@import './../../variables.scss';
+
 .select-container {
 	position: relative;
 	padding: 5px;
 	border-radius: 5px;
-	border: 1px solid #d83a2a;
+	border: 1px solid $primary-color;
 	width: 400px;
 
 	& > .select-box {
@@ -15,28 +17,25 @@
 			margin: 0;
 			font-size: 16px;
 			font-weight: 600;
-			padding-right: 20px;
+			padding-right: 10px;
 		}
 
 		& > input {
 			width: 300px;
 			height: 32px;
-			border-top-left-radius: 5px;
-			border-bottom-left-radius: 5px;
-			border: 1px solid #d83a2a;
+			border-radius: 5px;
+			border: 1px solid $primary-color;
+			padding: 5px;
 		}
 
 		& > input:hover {
 			outline: none;
-			// border: 1px solid #333333;
 		}
 
 		& > button {
 			background-color: transparent;
-			border: 1px solid #333333;
+			border: 1px solid $secondary-color;
 			border: transparent;
-			border-top-right-radius: 5px;
-			border-bottom-right-radius: 5px;
 			height: 32px;
 			width: 32px;
 		}
@@ -44,19 +43,14 @@
 		& > button:focus {
 			outline: none;
 		}
-
-		& > button:hover {
-			// border: 1px solid #333333;
-		}
 	}
 
 	& > .select-list {
 		position: absolute;
-		top: 100%;
 		left: 0;
 		right: 0;
-		background-color: #fff;
-		border: 1px solid #d83a2a;
+		background-color: $white-color;
+		border: 1px solid $primary-color;
 		border-bottom-right-radius: 5px;
 		border-bottom-left-radius: 5px;
 		max-height: 150px;
@@ -67,16 +61,46 @@
 		& > li {
 			cursor: pointer;
 			list-style-type: none;
-			padding-bottom: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			& > .button-container {
+				display: flex;
+
+				& > .form-button button {
+					min-width: 20px;
+					height: 20px;
+					border: transparent;
+					color: $secondary-color;
+				}
+
+				& > .form-button button:hover {
+					background-color: transparent;
+					color: $primary-color;
+				}
+
+				& > .form-button button:focus {
+					outline: none;
+				}
+			}
 		}
 		& > li:hover {
 			background-color: #f0f0f0;
 		}
 	}
+
+	& > .select-list-down {
+		top: 100%;
+		margin: 0;
+	}
+
+	& > .select-list-up {
+		bottom: 100%;
+		margin: 0;
+	}
 }
 
 .select-container:hover {
-	// background-color: #d83a2a;
 	color: #333333;
-	// border: 1px solid #333333;
 }

@@ -1,3 +1,5 @@
+@import './../../variables.scss';
+
 .accordion {
 	display: flex;
 	flex-direction: column;
@@ -17,6 +19,7 @@
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 		padding: 10px;
+		min-width: 250px;
 	}
 
 	& > .accordion-body-show {

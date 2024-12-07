@@ -1,3 +1,5 @@
+@import '../../variables.scss';
+
 .form-container {
 	padding: 20px 0 0 0;
 
@@ -15,7 +17,7 @@
 			width: 250px;
 			height: 250px;
 			border-radius: 5px;
-			border: 1px solid #d83a2a;
+			border: 1px solid $primary-color;
 			background-color: #aaa;
 
 			& > svg {
@@ -34,7 +36,7 @@
 			}
 
 			& > .upload-preview:hover {
-				color: #d83a2a;
+				color: $primary-color;
 				font-size: 22px;
 			}
 		}

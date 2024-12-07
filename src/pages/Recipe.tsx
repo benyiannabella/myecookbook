@@ -1,13 +1,8 @@
 import React from 'react';
-import RecipeForm from '../components/RecipeForm';
-import RecipeCategory from '../models/RecipeCategory';
+import RecipeForm from '../components/forms/RecipeForm';
 
-interface RecipeProps {
-	categories: RecipeCategory[];
-}
-
-const Recipe: React.FunctionComponent<RecipeProps> = ({ categories }) => {
-	return <RecipeForm categories={categories} />;
+const Recipe: React.FunctionComponent = () => {
+	return <RecipeForm />;
 };
 
 export default Recipe;

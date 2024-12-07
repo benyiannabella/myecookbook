@@ -6,19 +6,14 @@ import Error from './pages/Error';
 import Recipes from './pages/Recipes';
 import Welcome from './pages/Welcome';
 import Modal from './components/wrapper-components/Modal';
-import { useGlobalContext } from './GlobalContextProvider';
+import { useGlobalContext } from './context/GlobalContextProvider';
 import Home from './pages/Home';
 import { ToastContainer } from 'react-toastify';
 import Recipe from './pages/Recipe';
 
 const App = () => {
-	const {
-		isAuthenticated,
-		showModal,
-		modalContent,
-		categories,
-		onModalClosed,
-	} = useGlobalContext();
+	const { state, onModalClosed } = useGlobalContext();
+	const { isAuthenticated, showModal, modalContent } = state;
 
 	return (
 		<>
@@ -44,12 +39,12 @@ const App = () => {
 								element={<Favorites />}
 							/>
 							<Route
-								path="/categories"
+								path="categories"
 								element={<Categories />}
 								errorElement={<Error />}
 							/>
 							<Route
-								path="/about-app"
+								path="about-app"
 								element={<AboutApp />}
 								errorElement={<Error />}
 							/>
@@ -59,7 +54,7 @@ const App = () => {
 							/>
 							<Route
 								path="/recipes/add-recipe"
-								element={<Recipe categories={categories} />}
+								element={<Recipe />}
 							/>
 						</Route>
 					</Routes>

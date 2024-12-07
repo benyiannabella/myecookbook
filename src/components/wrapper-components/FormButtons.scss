@@ -1,8 +1,10 @@
+@import './../../variables.scss';
+
 .form-buttons {
 	display: flex;
 	flex: 1 1 auto;
 	gap: 20px;
 	align-items: center;
-	padding: 20px;
+	padding: $padding-base;
 	background-color: transparent;
 }

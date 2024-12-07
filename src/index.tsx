@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import GlobalContextProvider from './GlobalContextProvider';
+import GlobalContextProvider from './context/GlobalContextProvider';
 import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(

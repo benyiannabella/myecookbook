@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import FormButtons from '../components/wrapper-components/FormButtons';
 import './Categories.scss';
 import FormButton from '../components/wrapper-components/FormButton';
@@ -9,13 +9,14 @@ import { random } from '@ctrl/tinycolor';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+	faEye,
 	faFolderOpen,
 	faPenToSquare,
 	faPlus,
 	faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import CategoryForm from '../components/CategoryForm';
-import { useGlobalContext } from '../GlobalContextProvider';
+import CategoryForm from '../components/forms/CategoryForm';
+import { useGlobalContext } from '../context/GlobalContextProvider';
 import {
 	DeleteCategoryById,
 	RemoveImageFromSupabase,
@@ -23,12 +24,15 @@ import {
 import MessageBox from '../components/wrapper-components/MessageBox';
 import { toast } from 'react-toastify';
 import './ToastStyle.scss';
-import { GetImageNameFromUrl } from '../Helper';
+import { GetImageNameFromUrl } from '../services/Helper';
+import { RecipeActionType } from '../reducer/RecipeReducer';
 
 const Categories: React.FunctionComponent = () => {
 	const navigate = useNavigate();
-	const { onModalOpened, onModalClosed, user, getCategories, categories } =
+	const { onModalOpened, onModalClosed, getCategories, state, dispatch } =
 		useGlobalContext();
+
+	const { user, categories } = state;
 
 	useEffect(() => {
 		getCategories();
@@ -36,10 +40,18 @@ const Categories: React.FunctionComponent = () => {
 	}, [user?.id]);
 
 	const handleAddCategory = () => {
-		onModalOpened(
-			'Add Recipe Category',
-			<CategoryForm onModalClosed={handleModalClosed} />
-		);
+		dispatch({
+			type: RecipeActionType.SetCurrentCategory,
+			value: {
+				id: '',
+				userId: user?.id || '',
+				categoryName: '',
+				image: '',
+				description: '',
+				recipes: [],
+			},
+		});
+		onModalOpened('Add Recipe Category', <CategoryForm />);
 		getCategories();
 	};
 
@@ -57,7 +69,7 @@ const Categories: React.FunctionComponent = () => {
 	};
 
 	const handleDeleteApproved = (category: RecipeCategory) => {
-		DeleteCategoryById(category.id).then((response) => {
+		DeleteCategoryById(category?.id).then((response) => {
 			if (response.statusCode === 204) {
 				toast.success('Category deleted');
 
@@ -82,32 +94,20 @@ const Categories: React.FunctionComponent = () => {
 			<MessageBox
 				message="Are you sure you want to delete the selected category? 
                 This will remove all it's recipes too."
-			>
-				<FormButtons>
-					<FormButton
-						caption="No"
-						onClick={handleDeleteCancelled}
-					/>
-					<FormButton
-						caption="Yes"
-						onClick={() => handleDeleteApproved(category)}
-					/>
-				</FormButtons>
-			</MessageBox>
+				onNoClicked={handleDeleteCancelled}
+				onYesClicked={() => handleDeleteApproved(category)}
+			/>
 		);
 	};
 
-	const handleCategoryClicked = () => {
-		navigate('/recipes/category-recipes');
+	const handleViewRecipes = (categoryId: string) => {
+		navigate('/recipes/category-recipes', { state: { categoryId } });
 	};
 
 	const handleEditCategory = (category: RecipeCategory) => {
 		onModalOpened(
 			'Edit Recipe Category',
-			<CategoryForm
-				recipeCategory={category}
-				onModalClosed={handleModalClosed}
-			/>
+			<CategoryForm recipeCategory={category} />
 		);
 		getCategories();
 	};
@@ -131,8 +131,13 @@ const Categories: React.FunctionComponent = () => {
 								bgColor={random({ luminosity: 'light' }).toHexString()}
 								open
 								role="button"
-								// onClick={handleCategoryClicked}
 							>
+								<FormButton
+									caption=""
+									onClick={(e: any) => handleViewRecipes(category.id)}
+								>
+									<FontAwesomeIcon icon={faEye} />
+								</FormButton>
 								<FormButton
 									caption=""
 									onClick={() => handleAddRecipe(category.id)}
