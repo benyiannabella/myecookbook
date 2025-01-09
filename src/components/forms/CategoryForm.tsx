@@ -18,6 +18,7 @@ import { useGlobalContext } from '../../context/GlobalContextProvider';
 import { toast } from 'react-toastify';
 import { RecipeActionType } from '../../reducer/RecipeReducer';
 import ImageContainer from '../ImageContainer';
+import { createCategory, updateCategory } from '../../services/Helper';
 
 interface CategoryFormProps {
 	recipeCategory?: RecipeCategory;
@@ -106,32 +107,14 @@ const CategoryForm: React.FunctionComponent<CategoryFormProps> = ({
 		onModalClosed();
 	};
 
-	const saveCategory = async () => {
-		if (currentCategory.id === '') {
-			await CreateCategory(currentCategory).then((response) => {
-				if (response.statusCode === 201) {
-					toast.success('Category successfully created!');
-					onModalClosed();
-					getCategories();
-				} else if (response.error) {
-					toast.error(`Failed to create category! ${response.error}`);
-				}
-			});
-		} else {
-			await UpdateCategoryById(currentCategory).then((response) => {
-				if (response.statusCode === 204) {
-					onModalClosed();
-					getCategories();
-					toast.success('Category successfully updated!');
-				} else if (response.error) {
-					toast.error(`Failed to update category! ${response.error}`);
-				}
-			});
-		}
-	};
-
 	const handleCategorySave = () => {
-		saveCategory();
+		if (currentCategory.id === '') {
+			createCategory(currentCategory);
+		} else {
+			updateCategory(currentCategory);
+		}
+		onModalClosed();
+		getCategories();
 	};
 
 	return (

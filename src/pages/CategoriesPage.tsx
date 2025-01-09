@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import FormButtons from '../components/wrapper-components/FormButtons';
-import './Categories.scss';
+import './CategoriesPage.scss';
 import FormButton from '../components/wrapper-components/FormButton';
 import RecipeCategory from '../models/RecipeCategory';
 import Accordion from '../components/wrapper-components/Accordion';
@@ -17,17 +17,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import CategoryForm from '../components/forms/CategoryForm';
 import { useGlobalContext } from '../context/GlobalContextProvider';
-import {
-	DeleteCategoryById,
-	RemoveImageFromSupabase,
-} from '../services/RecipeService';
 import MessageBox from '../components/wrapper-components/MessageBox';
-import { toast } from 'react-toastify';
 import './ToastStyle.scss';
-import { GetImageNameFromUrl } from '../services/Helper';
+import { deleteCategory } from '../services/Helper';
 import { RecipeActionType } from '../reducer/RecipeReducer';
 
-const Categories: React.FunctionComponent = () => {
+const CategoriesPage: React.FunctionComponent = () => {
 	const navigate = useNavigate();
 	const { onModalOpened, onModalClosed, getCategories, state, dispatch } =
 		useGlobalContext();
@@ -55,37 +50,18 @@ const Categories: React.FunctionComponent = () => {
 		getCategories();
 	};
 
-	const handleAddRecipe = (categoryId: string) => {
-		navigate('/recipes/add-recipe', { state: { categoryId } });
+	const handleAddRecipe = (category: RecipeCategory) => {
+		navigate(`/categories/${category.id}/recipes/add-recipe`);
 	};
 
 	const handleDeleteCancelled = () => {
 		onModalClosed();
 	};
 
-	const handleModalClosed = () => {
+	const handleDeleteApproved = (category: RecipeCategory) => {
+		deleteCategory(category);
 		onModalClosed();
 		getCategories();
-	};
-
-	const handleDeleteApproved = (category: RecipeCategory) => {
-		DeleteCategoryById(category?.id).then((response) => {
-			if (response.statusCode === 204) {
-				toast.success('Category deleted');
-
-				RemoveImageFromSupabase(GetImageNameFromUrl(category.image ?? '')).then(
-					(res) => {
-						if (res.error) {
-							toast.error(`Failed to remove image from storage ${res.error}`);
-						}
-					}
-				);
-
-				handleModalClosed();
-			} else if (response.error) {
-				toast.error(`Failed to delete category. ${response.error}!`);
-			}
-		});
 	};
 
 	const handleDeleteCategory = (e: any, category: RecipeCategory) => {
@@ -101,7 +77,7 @@ const Categories: React.FunctionComponent = () => {
 	};
 
 	const handleViewRecipes = (categoryId: string) => {
-		navigate('/recipes/category-recipes', { state: { categoryId } });
+		navigate(`/categories/${categoryId}/recipes`);
 	};
 
 	const handleEditCategory = (category: RecipeCategory) => {
@@ -116,6 +92,7 @@ const Categories: React.FunctionComponent = () => {
 		<div className="categories-page">
 			<FormButtons>
 				<FormButton
+					className="new-button"
 					caption="Add New Category"
 					onClick={handleAddCategory}
 				/>
@@ -130,7 +107,6 @@ const Categories: React.FunctionComponent = () => {
 								title={category.categoryName}
 								bgColor={random({ luminosity: 'light' }).toHexString()}
 								open
-								role="button"
 							>
 								<FormButton
 									caption=""
@@ -140,7 +116,7 @@ const Categories: React.FunctionComponent = () => {
 								</FormButton>
 								<FormButton
 									caption=""
-									onClick={() => handleAddRecipe(category.id)}
+									onClick={() => handleAddRecipe(category)}
 								>
 									<FontAwesomeIcon icon={faPlus} />
 								</FormButton>
@@ -175,4 +151,4 @@ const Categories: React.FunctionComponent = () => {
 	);
 };
 
-export default Categories;
+export default CategoriesPage;

@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './TextBox.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import Tooltip from './Tooltip';
 
 interface TextBoxProps {
 	label: string;
@@ -9,6 +12,9 @@ interface TextBoxProps {
 	maxValue?: number;
 	children?: React.ReactNode;
 	placeholder?: string;
+	error?: string;
+	className?: string;
+	name?: string;
 	onValueChanged: (e: any) => void;
 }
 
@@ -20,8 +26,15 @@ const TextBox: React.FunctionComponent<TextBoxProps> = ({
 	maxValue,
 	children,
 	placeholder,
+	error,
+	className,
+	name,
 	onValueChanged,
 }) => {
+	const [isVisible, setIsVisible] = useState(false);
+	const showTooltip = () => setIsVisible(true);
+	const hideTooltip = () => setIsVisible(false);
+
 	const handleValueChanged = (e: any) => {
 		onValueChanged(e);
 	};
@@ -30,7 +43,7 @@ const TextBox: React.FunctionComponent<TextBoxProps> = ({
 		<div className="textbox-container">
 			<label htmlFor="textbox">{label}</label>
 			<input
-				name="textbox"
+				name={name}
 				type={type}
 				minLength={type === 'text' ? minValue : undefined}
 				maxLength={type === 'text' ? maxValue : undefined}
@@ -40,6 +53,21 @@ const TextBox: React.FunctionComponent<TextBoxProps> = ({
 				placeholder={placeholder ? placeholder : 'Enter text here...'}
 				onChange={handleValueChanged}
 			/>
+			{error && (
+				<div className="tooltip-container">
+					<div
+						onMouseEnter={showTooltip}
+						onMouseLeave={hideTooltip}
+						style={{ cursor: 'pointer' }}
+					>
+						<FontAwesomeIcon
+							color="red"
+							icon={faCircleExclamation}
+						/>
+					</div>
+					{isVisible && <div className="message-container">{message}</div>}
+				</div>
+			)}
 			{children}
 		</div>
 	);

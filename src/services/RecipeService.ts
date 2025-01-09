@@ -153,8 +153,18 @@ export const DeleteRecipeIngredientsByRecipeId = async (
 	recipeId: string
 ): Promise<ServiceResponse> => {
 	const { status, data, error } = await supabase
-		.from('recipe-ingredients')
+		.from('recipe_ingredients')
 		.delete()
+		.eq('recipeId', recipeId);
+	return { statusCode: status, data, error };
+};
+
+export const GetRecipeIngredientsByRecipeId = async (
+	recipeId: string
+): Promise<ServiceResponse> => {
+	const { status, data, error } = await supabase
+		.from('recipe_ingredients')
+		.select('*')
 		.eq('recipeId', recipeId);
 	return { statusCode: status, data, error };
 };

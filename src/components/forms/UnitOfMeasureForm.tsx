@@ -10,6 +10,7 @@ import {
 	UpdateUnitOfMeasureById,
 } from '../../services/RecipeService';
 import { toast } from 'react-toastify';
+import { createUoM, updateUoM } from '../../services/Helper';
 
 interface UnitOfMeasureFormProps {
 	currentUom?: UnitOfMeasure;
@@ -50,34 +51,12 @@ const UnitOfMeasureForm: React.FunctionComponent<UnitOfMeasureFormProps> = ({
 		}
 	};
 
-	const saveUom = async () => {
+	const handleUomSave = () => {
 		if (uom.id === '') {
-			await CreateUnitOfMeasure(uom).then((response) => {
-				if (response.statusCode === 201) {
-					toast.success(
-						`Unit of Measure ${uom.unitOfMeasureCode} successfully created!`
-					);
-					getUnitsOfMeasure();
-				} else if (response.error) {
-					toast.error(`Failed to create unit of measure. ${response.error}.`);
-				}
-			});
+			createUoM(uom, getUnitsOfMeasure);
 		} else {
-			await UpdateUnitOfMeasureById(uom).then((response) => {
-				if (response.statusCode === 204) {
-					toast.success(
-						`Unit of Measure ${uom.unitOfMeasureCode} successfully updated!`
-					);
-					getUnitsOfMeasure();
-				} else if (response.error) {
-					toast.error(`Failed to update Unit of Measure. ${response.error}.`);
-				}
-			});
+			updateUoM(uom, getUnitsOfMeasure);
 		}
-	};
-
-	const handleUomSave = (e: any) => {
-		saveUom();
 		onModalClosed();
 	};
 

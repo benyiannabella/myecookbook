@@ -3,6 +3,7 @@ import Ingredient from '../models/Ingredient';
 import RecipeCategory from '../models/RecipeCategory';
 import UnitOfMeasure from '../models/UnitOfMeasure';
 import ModalContent from '../models/ModalContent';
+import Recipe from '../models/Recipe';
 
 export interface RecipeState {
 	user: User | undefined;
@@ -13,6 +14,8 @@ export interface RecipeState {
 	currentCategory: RecipeCategory;
 	ingredients: Ingredient[];
 	unitsOfMeasure: UnitOfMeasure[];
+	recipes: Recipe[];
+	currentRecipe: Recipe;
 }
 
 export enum RecipeActionType {
@@ -22,6 +25,8 @@ export enum RecipeActionType {
 	'SetCurrentCategory',
 	'SetIngredients',
 	'SetUnitsOfMeasure',
+	'SetRecipes',
+	'SetCurrentRecipe',
 }
 
 export type RecipeAction =
@@ -48,6 +53,14 @@ export type RecipeAction =
 	| {
 			type: RecipeActionType.SetUnitsOfMeasure;
 			value: UnitOfMeasure[];
+	  }
+	| {
+			type: RecipeActionType.SetRecipes;
+			value: Recipe[];
+	  }
+	| {
+			type: RecipeActionType.SetCurrentRecipe;
+			value: Recipe;
 	  };
 
 const RecipeReducer: React.Reducer<RecipeState, RecipeAction> = (
@@ -80,6 +93,12 @@ const RecipeReducer: React.Reducer<RecipeState, RecipeAction> = (
 			break;
 		case RecipeActionType.SetUnitsOfMeasure:
 			state = { ...state, unitsOfMeasure: action.value };
+			break;
+		case RecipeActionType.SetRecipes:
+			state = { ...state, recipes: action.value };
+			break;
+		case RecipeActionType.SetCurrentRecipe:
+			state = { ...state, currentRecipe: action.value };
 			break;
 	}
 	return state;

@@ -1,6 +1,7 @@
 @import './../../variables.scss';
 
 .textbox-container {
+	position: relative;
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;

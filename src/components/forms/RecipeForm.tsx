@@ -1,22 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from '../wrapper-components/Form';
 import FormButton from '../wrapper-components/FormButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TextBox from '../wrapper-components/TextBox';
 import FormButtons from '../wrapper-components/FormButtons';
-import Recipe from '../../models/Recipe';
 import { useGlobalContext } from '../../context/GlobalContextProvider';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import {
 	CheckImageExists,
-	CreateRecipe,
-	CreateRecipeIngredients,
-	DeleteIngredientById,
-	DeleteRecipeById,
-	DeleteUnitOfMeasureById,
 	GetImageUrl,
 	RemoveImageFromSupabase,
-	UpdateRecipeById,
 	UploadImageToSupabase,
 } from '../../services/RecipeService';
 import { toast } from 'react-toastify';
@@ -26,52 +19,50 @@ import RecipeIngredient from '../../models/RecipeIngredient';
 import TinyMceEditor from '../TinyMceEditor';
 import IngredientForm from './IngredientForm';
 import UnitOfMeasureForm from './UnitOfMeasureForm';
-import Ingredient from '../../models/Ingredient';
-import UnitOfMeasure from '../../models/UnitOfMeasure';
 import MessageBox from '../wrapper-components/MessageBox';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ImageContainer from '../ImageContainer';
 import IngredientSelector from '../IngredientSelector';
+import { RecipeActionType } from '../../reducer/RecipeReducer';
+import {
+	createRecipe,
+	deleteRecipe,
+	updateRecipe,
+} from '../../services/Helper';
 
-interface RecipeProps {
-	recipeId?: string;
-}
-
-const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
-	const {
-		state,
-		onModalClosed,
-		onModalOpened,
-		getIngredients,
-		getUnitsOfMeasure,
-	} = useGlobalContext();
+const RecipeForm: React.FunctionComponent = () => {
+	const { state, dispatch, onModalClosed, onModalOpened, getRecipes } =
+		useGlobalContext();
 
 	const [selectedImage, setSelectedImage] = useState<string>('');
 
-	const { user, ingredients, unitsOfMeasure, categories } = state;
+	const { user, currentRecipe, ingredients, unitsOfMeasure, categories } =
+		state;
 	const navigate = useNavigate();
 
-	const location = useLocation();
-	const { categoryId } = location.state;
+	const { categoryId } = useParams();
 
-	const [recipe, setRecipe] = useState<Recipe>({
-		id: '',
-		userId: user?.id || '',
-		categoryId: categoryId || '',
-		recipeName: '',
-		instructions: '',
-		image: '',
-		isFavorite: false,
-		ingredients: [],
-	});
+	useEffect(() => {
+		if (currentRecipe.id === '' && categoryId) {
+			const recip = { ...currentRecipe, categoryId: categoryId };
+			dispatch({
+				type: RecipeActionType.SetCurrentRecipe,
+				value: recip,
+			});
+		}
+	}, [categoryId]);
 
 	useEffect(() => {
 		const getImageFromSupabase = async () => {
 			if (selectedImage !== '') {
 				await GetImageUrl(selectedImage).then((response) => {
-					if (response.data) {
-						const recip = { ...recipe, image: response.data };
-						setRecipe(recip);
+					if (response?.data) {
+						const recip = { ...currentRecipe, image: response?.data };
+
+						dispatch({
+							type: RecipeActionType.SetCurrentRecipe,
+							value: recip,
+						});
 					}
 					if (response.error) {
 						toast.error(
@@ -84,13 +75,6 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 
 		getImageFromSupabase();
 	}, [selectedImage]);
-
-	useEffect(() => {
-		if (categoryId) {
-			const recip = { ...recipe, categoryId: categoryId };
-			setRecipe(recip);
-		}
-	}, [categoryId]);
 
 	const onImageSelection = async (e: any) => {
 		const file = e.target.files[0];
@@ -113,56 +97,36 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 
 	const handleNameChanged = (e: any) => {
 		if (e) {
-			const recip = { ...recipe, recipeName: e.target.value };
-			setRecipe(recip);
+			const recip = { ...currentRecipe, recipeName: e.target.value };
+			dispatch({
+				type: RecipeActionType.SetCurrentRecipe,
+				value: recip,
+			});
 		}
 	};
 
 	const handleCancel = () => {
-		navigate('/categories');
+		navigate(`/categories/${categoryId}/recipes`);
 	};
 
 	const handleRecipeSave = () => {
-		if (recipe.id === '') {
-			CreateRecipe(recipe).then((response) => {
-				if (response.statusCode === 201 && response.data) {
-					toast.success('Recipe successfully created!');
-					const recipIngredients = recipe.ingredients.map((recIngr) => {
-						return { ...recIngr, recipeId: response.data[0].id };
-					});
-					const recip = {
-						...recipe,
-						id: response.data[0].id,
-						ingredients: recipIngredients,
-					};
-					setRecipe(recip);
-
-					CreateRecipeIngredients(recipIngredients, recip.id);
-				} else if (response.error) {
-					toast.error(`Failed to create recipe! ${response.error}`);
-				}
-			});
+		if (currentRecipe.id === '') {
+			if (user) {
+				const recip = { ...currentRecipe, userId: user?.id };
+				createRecipe(recip, dispatch, navigate);
+			}
 		} else {
-			UpdateRecipeById(recipe).then((response) => {
-				if (response.statusCode === 204) {
-					onModalClosed();
-					toast.success('Recipe successfully updated!');
-				} else if (response.error) {
-					toast.error(`Failed to update recipe! ${response.error}`);
-				}
-			});
+			updateRecipe(currentRecipe);
 		}
+		onModalClosed();
 	};
 
-	const deleteRecipe = async () => {
-		await DeleteRecipeById(recipe.id).then((response) => {
-			if (response.statusCode === 204) {
-				toast.success(`Recipe ${recipe.recipeName} successfully deleted.`);
-				navigate('/categories');
-			} else if (response.error) {
-				toast.error(`Failed to delete ${recipe.recipeName}.${response.error}.`);
-			}
-		});
+	const handleDeleteApproved = () => {
+		deleteRecipe(currentRecipe, navigate);
+		if (categoryId) {
+			getRecipes(categoryId);
+		}
+		onModalClosed();
 	};
 
 	const handleRecipeDelete = () => {
@@ -171,34 +135,43 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 			<MessageBox
 				message="Are you sure you want to delete this recipe?"
 				onNoClicked={onModalClosed}
-				onYesClicked={deleteRecipe}
+				onYesClicked={handleDeleteApproved}
 			/>
 		);
 	};
 
 	const handleCategoryChanged = (catId: string) => {
-		const recip = { ...recipe, categoryId: catId };
-		setRecipe(recip);
+		const recip = { ...currentRecipe, categoryId: catId };
+		dispatch({
+			type: RecipeActionType.SetCurrentRecipe,
+			value: recip,
+		});
 	};
 
 	const handleInstructionsChanged = (instr: string) => {
-		const recip = { ...recipe, instructions: instr };
-		setRecipe(recip);
+		const recip = { ...currentRecipe, instructions: instr };
+		dispatch({
+			type: RecipeActionType.SetCurrentRecipe,
+			value: recip,
+		});
 	};
 
 	const onAddIngredientToList = (recipeIngredient: RecipeIngredient) => {
-		const ingr = recipe.ingredients.find(
+		const ingr = currentRecipe.ingredients.find(
 			(i) => i.ingredientId === recipeIngredient.ingredientId
 		);
 		if (ingr) {
 			toast.warning('Ingredient already added to he list!');
 		} else {
-			const recipIngr = [...recipe.ingredients];
+			const recipIngr = [...currentRecipe.ingredients];
 			const recip = {
-				...recipe,
+				...currentRecipe,
 				ingredients: [...recipIngr, recipeIngredient],
 			};
-			setRecipe(recip);
+			dispatch({
+				type: RecipeActionType.SetCurrentRecipe,
+				value: recip,
+			});
 		}
 	};
 
@@ -212,21 +185,24 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 
 	const handleRemove = (ingredient: RecipeIngredient) => {
 		console.log(ingredient);
-		const recipIngrs = recipe.ingredients.filter(
+		const recipIngrs = currentRecipe.ingredients.filter(
 			(i) =>
 				i.quantity !== ingredient.quantity &&
 				i.ingredientId !== ingredient.ingredientId &&
 				i.unitOfMeasureId !== ingredient.unitOfMeasureId
 		);
 		console.log(recipIngrs);
-		const recip = { ...recipe, ingredients: recipIngrs };
-		setRecipe(recip);
+		const recip = { ...currentRecipe, ingredients: recipIngrs };
+		dispatch({
+			type: RecipeActionType.SetCurrentRecipe,
+			value: recip,
+		});
 	};
 
 	return (
 		<Form>
 			<div className="recipe-form">
-				{recipe.id !== '' ? <h4>{recipe.recipeName}</h4> : null}
+				{currentRecipe.id !== '' ? <h4>{currentRecipe.recipeName}</h4> : null}
 				<div className="top-row">
 					<FormButtons>
 						<FormButton
@@ -239,7 +215,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 							caption="New UoM"
 							onClick={handleAddNewUom}
 						/>
-						{recipe.id !== '' ? (
+						{currentRecipe.id !== '' ? (
 							<FormButton
 								className="primary-button"
 								caption="Delete"
@@ -259,7 +235,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 					</FormButtons>
 					<TextBox
 						label="Name"
-						value={recipe.recipeName}
+						value={currentRecipe.recipeName}
 						onValueChanged={handleNameChanged}
 					/>
 					<SelectBox
@@ -267,7 +243,7 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 						caption="Category"
 						valueField="id"
 						displayField="categoryName"
-						value={recipe.categoryId}
+						value={currentRecipe.categoryId}
 						onValueChanged={handleCategoryChanged}
 					/>
 				</div>
@@ -275,14 +251,14 @@ const RecipeForm: React.FunctionComponent<RecipeProps> = ({ recipeId }) => {
 					<div className="left-container">
 						<IngredientSelector onAddIngredientToList={onAddIngredientToList} />
 						<ImageContainer
-							image={recipe.image}
+							image={currentRecipe.image}
 							onImageSelection={onImageSelection}
 						/>
 					</div>
 					<div className="ingredient-list">
 						<h5>Ingredients:</h5>
 						<ul>
-							{recipe.ingredients.map((ingredient, index) => {
+							{currentRecipe.ingredients.map((ingredient, index) => {
 								return (
 									<li key={index}>
 										<span>

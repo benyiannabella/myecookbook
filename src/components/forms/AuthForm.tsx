@@ -5,6 +5,9 @@ import UserCredentials from '../../models/UserCredentials';
 import Form from '../wrapper-components/Form';
 import FormButtons from '../wrapper-components/FormButtons';
 import { useGlobalContext } from '../../context/GlobalContextProvider';
+import { validateFormData } from '../../services/ValidationService';
+import { loginFormValidation } from '../../services/ValidationHelper';
+import Tooltip from '../wrapper-components/Tooltip';
 
 // interface AuthFormProps {
 // }
@@ -14,6 +17,7 @@ const AuthForm: React.FunctionComponent = () => {
 		email: '',
 		password: '',
 	});
+	const [errors, setErrors] = useState<{ [key: string]: string }>({});
 	const { onModalClosed, onSignIn, onRegister } = useGlobalContext();
 
 	const handleEmailChange = (e: any) => {
@@ -26,16 +30,34 @@ const AuthForm: React.FunctionComponent = () => {
 		SetCredentials({ ...cred, password: e.target.value });
 	};
 
-	const handleSignUp = (e: any) => {
+	const handleRegister = (e: any) => {
 		e.preventDefault();
-		onRegister(credentials.email, credentials.password);
-		onModalClosed();
+		const validationResult = validateFormData(
+			{ email: credentials.email, password: credentials.password },
+			loginFormValidation
+		);
+		if (validationResult.isValid) {
+			onRegister(credentials.email, credentials.password);
+			setErrors({});
+			onModalClosed();
+		} else {
+			setErrors(validationResult.errors);
+		}
 	};
 
 	const handleSignIn = (e: any) => {
 		e.preventDefault();
-		onSignIn(credentials.email, credentials.password);
-		onModalClosed();
+		const validationResult = validateFormData(
+			{ email: credentials.email, password: credentials.password },
+			loginFormValidation
+		);
+		if (validationResult.isValid) {
+			onSignIn(credentials.email, credentials.password);
+			setErrors({});
+			onModalClosed();
+		} else {
+			setErrors(validationResult.errors);
+		}
 	};
 
 	return (
@@ -45,17 +67,20 @@ const AuthForm: React.FunctionComponent = () => {
 				onValueChanged={handleEmailChange}
 				placeholder="Enter Email..."
 				type="email"
+				error={errors.email}
+				name="email"
 			/>
 			<TextBox
 				label="Password"
 				onValueChanged={handlePasswordChange}
 				placeholder="Enter Password..."
 				type="password"
+				error={errors.password}
 			/>
 			<FormButtons>
 				<FormButton
-					caption="Sign Up"
-					onClick={handleSignUp}
+					caption="Register"
+					onClick={handleRegister}
 				/>
 				<FormButton
 					caption="Sign In"

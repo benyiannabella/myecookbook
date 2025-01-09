@@ -13,6 +13,7 @@ import RecipeReducer, {
 	RecipeState,
 } from '../reducer/RecipeReducer';
 import RecipeCategory from '../models/RecipeCategory';
+import Recipe from '../models/Recipe';
 import Ingredient from '../models/Ingredient';
 import UnitOfMeasure from '../models/UnitOfMeasure';
 import { supabase } from '../config/client';
@@ -20,6 +21,7 @@ import {
 	GetAllIngredients,
 	GetAllUnitsOfMeasure,
 	GetCategoriesByUserId,
+	GetRecipesByCategoryId,
 } from '../services/RecipeService';
 
 interface ContextType {
@@ -33,6 +35,7 @@ interface ContextType {
 	getCategories: () => Promise<void>;
 	getIngredients: () => Promise<void>;
 	getUnitsOfMeasure: () => Promise<void>;
+	getRecipes: (categoryId: string) => Promise<void>;
 }
 
 const GlobalContext = createContext<ContextType | undefined>(undefined);
@@ -65,6 +68,17 @@ const initialRecipeState: RecipeState = {
 	},
 	ingredients: [] as Ingredient[],
 	unitsOfMeasure: [] as UnitOfMeasure[],
+	recipes: [] as Recipe[],
+	currentRecipe: {
+		id: '',
+		userId: '',
+		categoryId: '',
+		recipeName: '',
+		instructions: '',
+		image: '',
+		isFavorite: false,
+		ingredients: [],
+	},
 };
 
 const GlobalContextProvider: React.FunctionComponent<
@@ -135,18 +149,28 @@ const GlobalContextProvider: React.FunctionComponent<
 		});
 	};
 
+	const getRecipes = async (categoryId: string) => {
+		await GetRecipesByCategoryId(categoryId || '').then((response) => {
+			if (response.data) {
+				dispatch({
+					type: RecipeActionType.SetRecipes,
+					value: response.data,
+				});
+			}
+		});
+	};
+
 	const onSignIn = async (email: string, password: string) => {
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
 			password,
 		});
 		if (error) {
-			console.error('Error signing in:', error.message);
+			toast.error(`Error signing in: ${error.message}`);
 			return;
+		} else if (data) {
+			toast.success(`You have successfully signed in!`);
 		}
-		const { user, session } = data;
-		console.log('Signed in user:', user);
-		console.log('Session details:', session);
 	};
 
 	const onRegister = async (email: string, password: string) => {
@@ -155,12 +179,11 @@ const GlobalContextProvider: React.FunctionComponent<
 			password,
 		});
 		if (error) {
-			console.error('Error signing up:', error.message);
+			toast.error(`Error signing in: ${error.message}`);
 			return;
+		} else if (data) {
+			toast.success(`You have successfully registered!`);
 		}
-		const { user, session } = data;
-		console.log('Signed up user:', user);
-		console.log('Session details:', session);
 	};
 
 	const onSignOut = async () => {
@@ -198,6 +221,7 @@ const GlobalContextProvider: React.FunctionComponent<
 				getCategories,
 				getIngredients,
 				getUnitsOfMeasure,
+				getRecipes,
 			}}
 		>
 			{children}

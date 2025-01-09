@@ -1,6 +1,6 @@
-import './Welcome.scss';
+import './LoginPage.scss';
 
-const Welcome = () => {
+const LoginPage = () => {
 	return (
 		<div className="welcome">
 			<div className="welcome-message">
@@ -17,4 +17,4 @@ const Welcome = () => {
 	);
 };
 
-export default Welcome;
+export default LoginPage;

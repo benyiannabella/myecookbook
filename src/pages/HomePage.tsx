@@ -1,10 +1,10 @@
 import React from 'react';
-import './Home.scss';
+import './HomePage.scss';
 import Navigation from '../components/Navigation';
 import { Outlet } from 'react-router-dom';
 import Footer from '../components/Footer';
 
-const Home: React.FunctionComponent = () => {
+const HomePage: React.FunctionComponent = () => {
 	return (
 		<div className="home">
 			<Navigation />
@@ -14,4 +14,4 @@ const Home: React.FunctionComponent = () => {
 	);
 };
 
-export default Home;
+export default HomePage;

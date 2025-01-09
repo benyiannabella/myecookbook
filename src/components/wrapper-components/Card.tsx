@@ -3,19 +3,12 @@ import './Card.scss';
 
 interface CardProps {
 	children: React.ReactNode;
-	onClick?: () => void;
+	className?: string;
 }
-const Card: React.FunctionComponent<CardProps> = ({ children, onClick }) => {
-	const handleClick = () => {
-		if (onClick) {
-			onClick();
-		}
-	};
+const Card: React.FunctionComponent<CardProps> = ({ children, className }) => {
 	return (
 		<div
-			className="card-container"
-			role="button"
-			onClick={handleClick}
+			className={className ? `card-container ${className}` : 'card-container'}
 		>
 			{children}
 		</div>

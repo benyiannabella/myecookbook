@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Categories from './pages/Categories';
-import AboutApp from './pages/AboutApp';
-import Favorites from './pages/Favorites';
-import Error from './pages/Error';
-import Recipes from './pages/Recipes';
-import Welcome from './pages/Welcome';
+import CategoriesPage from './pages/CategoriesPage';
+import AboutAppPage from './pages/AboutAppPage';
+import FavoritesPage from './pages/FavoritesPage';
+import ErrorPage from './pages/ErrorPage';
+import Recipes from './pages/RecipesPage';
+import LoginPage from './pages/LoginPage';
 import Modal from './components/wrapper-components/Modal';
 import { useGlobalContext } from './context/GlobalContextProvider';
-import Home from './pages/Home';
+import HomePage from './pages/HomePage';
 import { ToastContainer } from 'react-toastify';
-import Recipe from './pages/Recipe';
+import RecipePage from './pages/RecipePage';
 
 const App = () => {
 	const { state, onModalClosed } = useGlobalContext();
@@ -31,30 +31,34 @@ const App = () => {
 					<Routes>
 						<Route
 							path="/"
-							element={<Home />}
-							errorElement={<Error />}
+							element={<HomePage />}
+							errorElement={<ErrorPage />}
 						>
 							<Route
 								index
-								element={<Favorites />}
+								element={<FavoritesPage />}
 							/>
 							<Route
 								path="categories"
-								element={<Categories />}
-								errorElement={<Error />}
+								element={<CategoriesPage />}
+								errorElement={<ErrorPage />}
 							/>
 							<Route
-								path="about-app"
-								element={<AboutApp />}
-								errorElement={<Error />}
-							/>
-							<Route
-								path="/recipes/category-recipes"
+								path="categories/:categoryId/recipes"
 								element={<Recipes />}
 							/>
 							<Route
-								path="/recipes/add-recipe"
-								element={<Recipe />}
+								path="categories/:categoryId/recipes/add-recipe"
+								element={<RecipePage />}
+							/>
+							<Route
+								path="categories/:categoryId/recipes/:recipeId"
+								element={<RecipePage />}
+							/>
+							<Route
+								path="about-app"
+								element={<AboutAppPage />}
+								errorElement={<ErrorPage />}
 							/>
 						</Route>
 					</Routes>
@@ -62,11 +66,11 @@ const App = () => {
 					<Routes>
 						<Route
 							path="/"
-							element={<Home />}
+							element={<HomePage />}
 						>
 							<Route
 								index
-								element={<Welcome />}
+								element={<LoginPage />}
 							/>
 						</Route>
 					</Routes>

@@ -7,6 +7,7 @@ interface AccordionProps {
 	bgColor?: string;
 	children?: React.ReactNode;
 	role?: string;
+	onClick?: () => void;
 }
 
 const Accordion: React.FunctionComponent<AccordionProps> = ({
@@ -15,6 +16,7 @@ const Accordion: React.FunctionComponent<AccordionProps> = ({
 	bgColor,
 	children,
 	role,
+	onClick,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -39,6 +41,7 @@ const Accordion: React.FunctionComponent<AccordionProps> = ({
 					open || isOpen ? 'accordion-body-show' : 'accordion-body-hide'
 				}
 				role={role}
+				onClick={onClick}
 			>
 				{children}
 			</div>

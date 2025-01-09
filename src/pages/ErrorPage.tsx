@@ -3,7 +3,7 @@ import { Link, useRouteError } from 'react-router-dom';
 import NotFound from '../assets/NotFound';
 import FormButton from '../components/wrapper-components/FormButton';
 
-const Error = () => {
+const ErrorPage = () => {
 	const error: any = useRouteError();
 	if (error?.status === 404) {
 		return (
@@ -23,4 +23,4 @@ const Error = () => {
 	return <div>Error</div>;
 };
 
-export default Error;
+export default ErrorPage;

@@ -2,17 +2,11 @@
 
 .card-container {
 	display: flex;
+	flex-direction: column;
 	gap: $padding-base;
-	padding: 20px 40px;
-	width: 70%;
+	padding: 20px;
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 	background-color: $background-color;
 	border-radius: 15px;
-	margin-top: 32px;
 	min-height: 300px;
-}
-
-.card-container:hover {
-	background-color: $primary-color;
-	color: $white-color;
 }

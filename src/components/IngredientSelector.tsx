@@ -14,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import UnitOfMeasure from '../models/UnitOfMeasure';
 import UnitOfMeasureForm from './forms/UnitOfMeasureForm';
+import { deleteIngredient, deleteUoM } from '../services/Helper';
 
 interface IngredientSelectorProps {
 	onAddIngredientToList: (recipIngredient: RecipeIngredient) => void;
@@ -38,8 +39,8 @@ const IngredientSelector: React.FunctionComponent<IngredientSelectorProps> = ({
 		state,
 		onModalOpened,
 		onModalClosed,
-		getIngredients,
 		getUnitsOfMeasure,
+		getIngredients,
 	} = useGlobalContext();
 	const { ingredients, unitsOfMeasure } = state;
 
@@ -64,29 +65,15 @@ const IngredientSelector: React.FunctionComponent<IngredientSelectorProps> = ({
 		);
 	};
 
-	const deleteIngredient = async (ingredient: Ingredient) => {
-		await DeleteIngredientById(ingredient.id).then((response) => {
-			if (response.statusCode === 204) {
-				toast.success(
-					`Ingredient ${ingredient.ingredientName} successfully deleted.`
-				);
-				onModalClosed();
-				getIngredients();
-			} else if (response.error) {
-				toast.error(
-					`Failed to delete ingredient ${ingredient.ingredientName}! ${response.error}`
-				);
-			}
-		});
-	};
-
 	const handleIngredientDelete = (ingredient: Ingredient) => {
 		onModalOpened(
 			'Delete Ingredient',
 			<MessageBox
 				message="Are you sure you want to delete this Ingredient?"
 				onNoClicked={onModalClosed}
-				onYesClicked={() => deleteIngredient(ingredient)}
+				onYesClicked={() =>
+					deleteIngredient(ingredient, onModalClosed, getIngredients)
+				}
 			/>
 		);
 	};
@@ -103,29 +90,13 @@ const IngredientSelector: React.FunctionComponent<IngredientSelectorProps> = ({
 		);
 	};
 
-	const deleteUom = async (uom: UnitOfMeasure) => {
-		await DeleteUnitOfMeasureById(uom.id).then((response) => {
-			if (response.statusCode === 204) {
-				toast.success(
-					`Unit of Measure ${uom.unitOfMeasureCode} successfully deleted.`
-				);
-				onModalClosed();
-				getUnitsOfMeasure();
-			} else if (response.error) {
-				toast.error(
-					`Failed to delete Unit of Measure ${uom.unitOfMeasureCode}! ${response.error}`
-				);
-			}
-		});
-	};
-
 	const handleUomDelete = (uom: UnitOfMeasure) => {
 		onModalOpened(
 			'Delete Unit of Measure',
 			<MessageBox
 				message="Are you sure you want to delete this Unit of Measure?"
 				onNoClicked={() => onModalClosed()}
-				onYesClicked={() => deleteUom(uom)}
+				onYesClicked={() => deleteUoM(uom, onModalClosed, getUnitsOfMeasure)}
 			/>
 		);
 	};

@@ -10,6 +10,7 @@ import {
 	UpdateIngredientById,
 } from '../../services/RecipeService';
 import { toast } from 'react-toastify';
+import { createIngredient, updateIngredient } from '../../services/Helper';
 
 interface IngredientFormProps {
 	currentIngredient?: Ingredient;
@@ -50,34 +51,12 @@ const IngredientForm: React.FunctionComponent<IngredientFormProps> = ({
 		}
 	};
 
-	const saveIngredient = async () => {
-		if (ingredient.id === '') {
-			await CreateIngredient(ingredient).then((response) => {
-				if (response.statusCode === 201) {
-					toast.success(
-						`Ingredient ${ingredient.ingredientName} successfully created!`
-					);
-					getIngredients();
-				} else if (response.error) {
-					toast.error(`Failed to create ingredient. ${response.error}.`);
-				}
-			});
-		} else {
-			await UpdateIngredientById(ingredient).then((response) => {
-				if (response.statusCode === 204) {
-					toast.success(
-						`Ingredient ${ingredient.ingredientName} successfully updated!`
-					);
-					getIngredients();
-				} else if (response.error) {
-					toast.error(`Failed to update ingredient. ${response.error}.`);
-				}
-			});
-		}
-	};
-
 	const handleIngredientSave = () => {
-		saveIngredient();
+		if (ingredient.id === '') {
+			createIngredient(ingredient, getIngredients);
+		} else {
+			updateIngredient(ingredient, getIngredients);
+		}
 		onModalClosed();
 	};
 

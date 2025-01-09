@@ -1,0 +1,17 @@
+.tooltip-container {
+	position: 'relative';
+	display: 'inline-block';
+
+	& > .message-container {
+		position: 'absolute';
+		bottom: '125%';
+		left: '50%';
+		transform: 'translateX(-50%)';
+		background-color: 'black';
+		color: '#fff';
+		padding: '5px 10px';
+		border-radius: '4px';
+		white-space: 'nowrap';
+		z-index: 1;
+	}
+}
