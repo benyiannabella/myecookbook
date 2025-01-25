@@ -21,6 +21,7 @@ import {
 	GetAllIngredients,
 	GetAllUnitsOfMeasure,
 	GetCategoriesByUserId,
+	GetFirstFiveRecipe,
 	GetRecipesByCategoryId,
 } from '../services/RecipeService';
 
@@ -36,6 +37,7 @@ interface ContextType {
 	getIngredients: () => Promise<void>;
 	getUnitsOfMeasure: () => Promise<void>;
 	getRecipes: (categoryId: string) => Promise<void>;
+	getFirstFiveRecipe: () => Promise<void>;
 }
 
 const GlobalContext = createContext<ContextType | undefined>(undefined);
@@ -160,6 +162,17 @@ const GlobalContextProvider: React.FunctionComponent<
 		});
 	};
 
+	const getFirstFiveRecipe = async () => {
+		await GetFirstFiveRecipe().then((response) => {
+			if (response.data) {
+				dispatch({
+					type: RecipeActionType.SetRecipes,
+					value: response.data,
+				});
+			}
+		});
+	};
+
 	const onSignIn = async (email: string, password: string) => {
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
@@ -222,6 +235,7 @@ const GlobalContextProvider: React.FunctionComponent<
 				getIngredients,
 				getUnitsOfMeasure,
 				getRecipes,
+				getFirstFiveRecipe,
 			}}
 		>
 			{children}

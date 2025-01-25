@@ -5,6 +5,7 @@ interface TinyMceEditorProps {
 	width?: string | number;
 	height?: string | number;
 	resize?: boolean | 'both' | undefined;
+	value?: string;
 	onEditorChanged: (content: string) => void;
 }
 
@@ -13,6 +14,7 @@ const TinyMceEditor: React.FunctionComponent<TinyMceEditorProps> = ({
 	width,
 	height,
 	resize,
+	value,
 }) => {
 	const editorRef = useRef<any>(null);
 
@@ -24,6 +26,7 @@ const TinyMceEditor: React.FunctionComponent<TinyMceEditorProps> = ({
 			<Editor
 				onInit={(evt, editor) => (editorRef.current = editor)}
 				onEditorChange={handleEditorChange}
+				initialValue={value}
 				init={{
 					height: height,
 					width: width,

@@ -72,6 +72,14 @@ export const GetRecipesByCategoryId = async (
 	return { statusCode: status, data, error };
 };
 
+export const GetFirstFiveRecipe = async (): Promise<ServiceResponse> => {
+	const { status, data, error } = await supabase
+		.from('recipes')
+		.select('*')
+		.limit(5);
+	return { statusCode: status, data, error };
+};
+
 export const GetRecipeById = async (
 	recipeId: string
 ): Promise<ServiceResponse> => {
@@ -127,7 +135,14 @@ export const UpdateRecipeById = async (
 ): Promise<ServiceResponse> => {
 	const { status, data, error } = await supabase
 		.from('recipes')
-		.update(recipe)
+		.update({
+			userId: recipe.userId,
+			categoryId: recipe.categoryId,
+			recipeName: recipe.recipeName,
+			instructions: recipe.instructions,
+			image: recipe.image,
+			isFavorite: recipe.isFavorite,
+		})
 		.eq('id', recipe.id);
 	if (status === 204) {
 		await DeleteRecipeIngredientsByRecipeId(recipe.id).then((res) => {

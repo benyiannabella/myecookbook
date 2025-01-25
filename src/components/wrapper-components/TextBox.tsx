@@ -65,7 +65,7 @@ const TextBox: React.FunctionComponent<TextBoxProps> = ({
 							icon={faCircleExclamation}
 						/>
 					</div>
-					{isVisible && <div className="message-container">{message}</div>}
+					{isVisible && <div className="message-container">{error}</div>}
 				</div>
 			)}
 			{children}

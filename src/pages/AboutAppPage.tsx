@@ -1,7 +1,8 @@
 import React from 'react';
+import './AboutApp.scss';
 
 const AboutAppPage = () => {
-	return <div>AboutApp</div>;
+	return <div className="image-container" />;
 };
 
 export default AboutAppPage;

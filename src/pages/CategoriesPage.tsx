@@ -9,7 +9,6 @@ import { random } from '@ctrl/tinycolor';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-	faEye,
 	faFolderOpen,
 	faPenToSquare,
 	faPlus,
@@ -50,7 +49,8 @@ const CategoriesPage: React.FunctionComponent = () => {
 		getCategories();
 	};
 
-	const handleAddRecipe = (category: RecipeCategory) => {
+	const handleAddRecipe = (e: any, category: RecipeCategory) => {
+		e.stopPropagation();
 		navigate(`/categories/${category.id}/recipes/add-recipe`);
 	};
 
@@ -65,6 +65,7 @@ const CategoriesPage: React.FunctionComponent = () => {
 	};
 
 	const handleDeleteCategory = (e: any, category: RecipeCategory) => {
+		e.stopPropagation();
 		onModalOpened(
 			'Delete Category',
 			<MessageBox
@@ -76,11 +77,13 @@ const CategoriesPage: React.FunctionComponent = () => {
 		);
 	};
 
-	const handleViewRecipes = (categoryId: string) => {
-		navigate(`/categories/${categoryId}/recipes`);
+	const handleViewRecipes = (category: RecipeCategory) => {
+		navigate(`/categories/${category.id}/recipes`);
+		dispatch({ type: RecipeActionType.SetCurrentCategory, value: category });
 	};
 
-	const handleEditCategory = (category: RecipeCategory) => {
+	const handleEditCategory = (e: any, category: RecipeCategory) => {
+		e.stopPropagation();
 		onModalOpened(
 			'Edit Recipe Category',
 			<CategoryForm recipeCategory={category} />
@@ -106,23 +109,18 @@ const CategoriesPage: React.FunctionComponent = () => {
 								key={category.id}
 								title={category.categoryName}
 								bgColor={random({ luminosity: 'light' }).toHexString()}
+								onClick={() => handleViewRecipes(category)}
 								open
 							>
 								<FormButton
 									caption=""
-									onClick={(e: any) => handleViewRecipes(category.id)}
-								>
-									<FontAwesomeIcon icon={faEye} />
-								</FormButton>
-								<FormButton
-									caption=""
-									onClick={() => handleAddRecipe(category)}
+									onClick={(e: any) => handleAddRecipe(e, category)}
 								>
 									<FontAwesomeIcon icon={faPlus} />
 								</FormButton>
 								<FormButton
 									caption=""
-									onClick={() => handleEditCategory(category)}
+									onClick={(e: any) => handleEditCategory(e, category)}
 								>
 									<FontAwesomeIcon icon={faPenToSquare} />
 								</FormButton>

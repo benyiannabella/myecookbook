@@ -9,6 +9,12 @@
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 	background-color: $background-color;
 
+	& > .recipes-top-row {
+		display: flex;
+		justify-content: space-between;
+		padding-top: 20px;
+	}
+
 	& > .form-buttons {
 		justify-content: space-between;
 	}
@@ -58,20 +64,10 @@
 
 			& .form-button:first-child {
 				top: 10px;
-				right: 96px;
-			}
-
-			& .form-button:nth-child(2) {
-				top: 10px;
-				right: 68px;
-			}
-
-			& .form-button:nth-child(3) {
-				top: 10px;
 				right: 38px;
 			}
 
-			& .form-button:nth-child(4) {
+			& .form-button:nth-child(2) {
 				top: 10px;
 				right: 10px;
 			}

@@ -43,11 +43,6 @@ const Navigation: React.FunctionComponent = () => {
 					/>
 					{state.isAuthenticated ? (
 						<>
-							<TextBox
-								label=""
-								placeholder="Search Recipe..."
-								onValueChanged={() => console.log('value changed')}
-							/>
 							<FormButton
 								caption=""
 								onClick={handleSignOutClicked}

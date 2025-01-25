@@ -9,6 +9,7 @@ import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import {
 	CheckImageExists,
 	GetImageUrl,
+	GetRecipeIngredientsByRecipeId,
 	RemoveImageFromSupabase,
 	UploadImageToSupabase,
 } from '../../services/RecipeService';
@@ -42,13 +43,29 @@ const RecipeForm: React.FunctionComponent = () => {
 
 	const { categoryId } = useParams();
 
+	const getRecipeIngredients = async (recipeId: string) => {
+		GetRecipeIngredientsByRecipeId(recipeId).then((response) => {
+			if (response.data) {
+				const recipe = { ...currentRecipe, ingredients: response.data };
+				dispatch({
+					type: RecipeActionType.SetCurrentRecipe,
+					value: recipe,
+				});
+			} else if (response.error) {
+				toast.error(`Failed to get ingredients. ${response.error}`);
+			}
+		});
+	};
+
 	useEffect(() => {
-		if (currentRecipe.id === '' && categoryId) {
+		if (currentRecipe?.id === '' && categoryId) {
 			const recip = { ...currentRecipe, categoryId: categoryId };
 			dispatch({
 				type: RecipeActionType.SetCurrentRecipe,
 				value: recip,
 			});
+		} else if (currentRecipe?.id !== '') {
+			getRecipeIngredients(currentRecipe.id);
 		}
 	}, [categoryId]);
 
@@ -183,15 +200,13 @@ const RecipeForm: React.FunctionComponent = () => {
 		onModalOpened('Add Unit of Measure', <UnitOfMeasureForm />);
 	};
 
-	const handleRemove = (ingredient: RecipeIngredient) => {
-		console.log(ingredient);
+	const handleRemoveIngredient = (ingredient: RecipeIngredient) => {
 		const recipIngrs = currentRecipe.ingredients.filter(
 			(i) =>
 				i.quantity !== ingredient.quantity &&
 				i.ingredientId !== ingredient.ingredientId &&
 				i.unitOfMeasureId !== ingredient.unitOfMeasureId
 		);
-		console.log(recipIngrs);
 		const recip = { ...currentRecipe, ingredients: recipIngrs };
 		dispatch({
 			type: RecipeActionType.SetCurrentRecipe,
@@ -202,20 +217,22 @@ const RecipeForm: React.FunctionComponent = () => {
 	return (
 		<Form>
 			<div className="recipe-form">
-				{currentRecipe.id !== '' ? <h4>{currentRecipe.recipeName}</h4> : null}
+				{currentRecipe.id !== '' ? <h4>{currentRecipe?.recipeName}</h4> : null}
 				<div className="top-row">
 					<FormButtons>
-						<FormButton
-							className="new-button"
-							caption="New Ingredient"
-							onClick={handleAddNewIngredient}
-						/>
-						<FormButton
-							className="new-button"
-							caption="New UoM"
-							onClick={handleAddNewUom}
-						/>
-						{currentRecipe.id !== '' ? (
+						<>
+							<FormButton
+								className="new-button"
+								caption="New Ingr"
+								onClick={handleAddNewIngredient}
+							/>
+							<FormButton
+								className="new-button"
+								caption="New UoM"
+								onClick={handleAddNewUom}
+							/>
+						</>
+						{currentRecipe?.id !== '' ? (
 							<FormButton
 								className="primary-button"
 								caption="Delete"
@@ -235,7 +252,7 @@ const RecipeForm: React.FunctionComponent = () => {
 					</FormButtons>
 					<TextBox
 						label="Name"
-						value={currentRecipe.recipeName}
+						value={currentRecipe?.recipeName}
 						onValueChanged={handleNameChanged}
 					/>
 					<SelectBox
@@ -243,7 +260,7 @@ const RecipeForm: React.FunctionComponent = () => {
 						caption="Category"
 						valueField="id"
 						displayField="categoryName"
-						value={currentRecipe.categoryId}
+						value={currentRecipe?.categoryId}
 						onValueChanged={handleCategoryChanged}
 					/>
 				</div>
@@ -251,14 +268,14 @@ const RecipeForm: React.FunctionComponent = () => {
 					<div className="left-container">
 						<IngredientSelector onAddIngredientToList={onAddIngredientToList} />
 						<ImageContainer
-							image={currentRecipe.image}
+							image={currentRecipe?.image}
 							onImageSelection={onImageSelection}
 						/>
 					</div>
 					<div className="ingredient-list">
 						<h5>Ingredients:</h5>
 						<ul>
-							{currentRecipe.ingredients.map((ingredient, index) => {
+							{currentRecipe.ingredients?.map((ingredient, index) => {
 								return (
 									<li key={index}>
 										<span>
@@ -276,7 +293,7 @@ const RecipeForm: React.FunctionComponent = () => {
 										</span>
 										<FormButton
 											caption=""
-											onClick={() => handleRemove(ingredient)}
+											onClick={() => handleRemoveIngredient(ingredient)}
 										>
 											<FontAwesomeIcon icon={faTrashCan} />
 										</FormButton>
@@ -290,6 +307,7 @@ const RecipeForm: React.FunctionComponent = () => {
 						<TinyMceEditor
 							onEditorChanged={handleInstructionsChanged}
 							height={500}
+							value={currentRecipe?.instructions}
 						/>
 					</div>
 				</div>
